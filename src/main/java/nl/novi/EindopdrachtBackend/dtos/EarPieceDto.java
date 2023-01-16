@@ -3,6 +3,8 @@ package nl.novi.EindopdrachtBackend.dtos;
 import jakarta.validation.constraints.*;
 
 public class EarPieceDto {
+
+    private Long Id;
     @NotBlank
     private String type;
     private String colour;
@@ -10,7 +12,15 @@ public class EarPieceDto {
     @Positive
     private Double price;
 
-    private EarPieceDto() {
+    public EarPieceDto() {
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
     }
 
     public String getType() {
