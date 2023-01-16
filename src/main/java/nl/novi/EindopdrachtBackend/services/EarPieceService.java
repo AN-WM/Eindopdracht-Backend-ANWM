@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class EarPieceService {
 
-    private EarPieceRepository earPieceRepository;
+    private final EarPieceRepository earPieceRepository;
 
     public EarPieceService(EarPieceRepository earPieceRepository) {
         this.earPieceRepository = earPieceRepository;
@@ -41,7 +41,7 @@ public class EarPieceService {
         Optional<EarPiece> earPiece = earPieceRepository.findById(id);
 
         if (earPiece.isPresent())
-            throw new DuplicateRecordException(String.format("An earpiece with id %s already exists", id));
+            throw new DuplicateRecordException(String.format("An earpiece with id %d already exists", id));
 
         EarPiece savedEarPiece = earPieceRepository.save(toEarPiece(earPieceDto));
         return savedEarPiece.getId();

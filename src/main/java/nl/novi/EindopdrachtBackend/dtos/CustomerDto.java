@@ -3,6 +3,7 @@ package nl.novi.EindopdrachtBackend.dtos;
 import jakarta.validation.constraints.*;
 
 public class CustomerDto {
+    private Long id;
     @NotBlank
     private String firstName;
     @NotBlank
@@ -17,6 +18,14 @@ public class CustomerDto {
     //private doc document
 
     public CustomerDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {

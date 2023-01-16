@@ -3,9 +3,18 @@ package nl.novi.EindopdrachtBackend.dtos;
 import java.util.Date;
 
 public class ReceiptDto {
-    private Date saleDate;
+    public Long id;
+    public Date saleDate;
 
-    private ReceiptDto() {
+    public ReceiptDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getSaleDate() {

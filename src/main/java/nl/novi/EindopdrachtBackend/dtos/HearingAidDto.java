@@ -11,7 +11,7 @@ public class HearingAidDto {
     @Positive
     private Double price;
 
-    private HearingAidDto() {
+    public HearingAidDto() {
     }
 
     public String getProductcode() {
