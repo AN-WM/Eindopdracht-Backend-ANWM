@@ -45,7 +45,7 @@ public class ReceiptService {
         return fromReceipt(receipt.get());
     }
 
-    public Long saveReceipt(ReceiptDto receiptDto) {
+    public Long createReceipt(ReceiptDto receiptDto) {
         Long id = receiptDto.getId();
         Optional<Receipt> receipt = receiptRepository.findById(id);
 
@@ -56,11 +56,10 @@ public class ReceiptService {
         return savedReceipt.getId();
     }
 
-    public ReceiptDto updateReceipt(ReceiptDto receiptDto) {
-        Long id = receiptDto.getId();
-        Optional<Receipt> receipt = receiptRepository.findById(id);
+    public ReceiptDto updateReceipt(Long receiptId, ReceiptDto receiptDto) {
+        Optional<Receipt> receipt = receiptRepository.findById(receiptId);
         if (receipt.isEmpty())
-            throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", id));
+            throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
 
         receiptRepository.save(toReceipt(receiptDto));
         return receiptDto;

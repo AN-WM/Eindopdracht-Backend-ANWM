@@ -36,7 +36,7 @@ public class HearingAidService {
         return fromHearingAid(hearingAid.get());
     }
 
-    public String saveHearingAid(HearingAidDto hearingAidDto) {
+    public String createHearingAid(HearingAidDto hearingAidDto) {
         String productcode = hearingAidDto.getProductcode();
         Optional<HearingAid> hearingAid = hearingAidRepository.findById(productcode);
 
@@ -47,8 +47,7 @@ public class HearingAidService {
         return savedHearingAid.getProductcode();
     }
 
-    public HearingAidDto updateHearingAid(HearingAidDto hearingAidDto) {
-        String productcode = hearingAidDto.getProductcode();
+    public HearingAidDto updateHearingAid(String productcode, HearingAidDto hearingAidDto) {
         Optional<HearingAid> hearingAid = hearingAidRepository.findById(productcode);
         if (hearingAid.isEmpty())
             throw new IndexOutOfBoundsException(String.format("Hearing aid with id %s was not found", productcode));

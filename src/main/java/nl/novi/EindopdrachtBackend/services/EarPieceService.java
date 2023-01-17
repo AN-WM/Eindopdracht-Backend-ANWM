@@ -36,22 +36,21 @@ public class EarPieceService {
         return fromEarPiece(earPiece.get());
     }
 
-    public Long saveEarPiece(EarPieceDto earPieceDto) {
+    public Long createEarPiece(EarPieceDto earPieceDto) {
         Long id = earPieceDto.getId();
         Optional<EarPiece> earPiece = earPieceRepository.findById(id);
 
         if (earPiece.isPresent())
-            throw new DuplicateRecordException(String.format("An earpiece with id %d already exists", id));
+            throw new DuplicateRecordException(String.format("An earPiece with id %d already exists", id));
 
         EarPiece savedEarPiece = earPieceRepository.save(toEarPiece(earPieceDto));
         return savedEarPiece.getId();
     }
 
-    public EarPieceDto updateEarPiece(EarPieceDto earPieceDto) {
-        Long id = earPieceDto.getId();
-        Optional<EarPiece> earPiece = earPieceRepository.findById(id);
+    public EarPieceDto updateEarPiece(Long earPieceId, EarPieceDto earPieceDto) {
+        Optional<EarPiece> earPiece = earPieceRepository.findById(earPieceId);
         if (earPiece.isEmpty())
-            throw new IndexOutOfBoundsException(String.format("Earpiece with id %d was not found", id));
+            throw new IndexOutOfBoundsException(String.format("Earpiece with id %d was not found", earPieceId));
 
         earPieceRepository.save(toEarPiece(earPieceDto));
         return earPieceDto;

@@ -44,7 +44,7 @@ public class CustomerService {
         return fromCustomer(customer.get());
     }
 
-    public Long saveCustomer(CustomerDto customerDto) {
+    public Long createCustomer(CustomerDto customerDto) {
         Long id = customerDto.getId();
         Optional<Customer> customer = customerRepository.findById(id);
 
@@ -55,11 +55,10 @@ public class CustomerService {
         return savedCustomer.getId();
     }
 
-    public CustomerDto updateCustomer(CustomerDto customerDto) {
-        Long id = customerDto.getId();
-        Optional<Customer> customer = customerRepository.findById(id);
+    public CustomerDto updateCustomer(Long customerId, CustomerDto customerDto) {
+        Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isEmpty())
-            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", id));
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
 
         customerRepository.save(toCustomer(customerDto));
         return customerDto;
