@@ -4,7 +4,10 @@ import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.exceptions.DuplicateRecordException;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
 import nl.novi.EindopdrachtBackend.models.Customer;
+import nl.novi.EindopdrachtBackend.models.HearingAid;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
+import nl.novi.EindopdrachtBackend.repositories.EarPieceRepository;
+import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +17,14 @@ import java.util.*;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final HearingAidRepository hearingAidRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(
+            CustomerRepository customerRepository,
+            HearingAidRepository hearingAidRepository) {
+
         this.customerRepository = customerRepository;
+        this.hearingAidRepository = hearingAidRepository;
     }
 
     public List<CustomerDto> getAllCustomers() {
@@ -64,6 +72,40 @@ public class CustomerService {
 
         customerRepository.deleteById(id);
         return ResponseEntity.ok("Customer removed from database");
+    }
+
+    public ResponseEntity<Object> addHearingAid(Long customerId, String productcode) {
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        if (hearingAidRepository.findById(productcode).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Hearing aid with id %s was not found", productcode));
+
+        HearingAid hearingAid = hearingAidRepository.findById(productcode).get();
+
+        customer.addHearingAid(hearingAid);
+        customerRepository.save(customer);
+
+        return ResponseEntity.ok("Hearing aid added to customer");
+    }
+
+    public ResponseEntity<Object> removeHearingAid(Long customerId, String productcode) {
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        if (hearingAidRepository.findById(productcode).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Earpiece with id %s was not found", productcode));
+
+        HearingAid hearingAidToRemove = customer.getHearingAidList().stream().filter((a) -> a.getProductcode().equals(productcode)).findAny().get();
+
+        customer.removeHearingAid(hearingAidToRemove);
+        customerRepository.save(customer);
+
+        return ResponseEntity.ok("Hearing aid removed from customer");
     }
 
     public Customer toCustomer(CustomerDto dto) {

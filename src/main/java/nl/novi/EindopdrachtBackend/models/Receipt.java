@@ -65,4 +65,21 @@ public class Receipt {
     public void setEarPieceList(List<EarPiece> earPieceList) {
         this.earPieceList = earPieceList;
     }
+
+    public void addEarPiece(EarPiece earPiece) {
+        this.earPieceList.add(earPiece);
+    }
+
+    public void removeEarPiece(EarPiece earPiece) {
+        this.earPieceList.remove(earPiece);
+    }
+    
+    public void addHearingAid(HearingAid hearingAid) {
+        this.hearingAidList.add(hearingAid);
+    }
+
+    public void removeHearingAid(HearingAid hearingAid) {
+        this.hearingAidList.remove(hearingAid);
+    }
+
 }

@@ -107,4 +107,12 @@ public class Customer {
     public void setHearingAidList(List<HearingAid> hearingAidList) {
         this.hearingAidList = hearingAidList;
     }
+
+    public void addHearingAid(HearingAid hearingAid) {
+        this.hearingAidList.add(hearingAid);
+    }
+
+    public void removeHearingAid(HearingAid hearingAid) {
+        this.hearingAidList.remove(hearingAid);
+    }
 }
