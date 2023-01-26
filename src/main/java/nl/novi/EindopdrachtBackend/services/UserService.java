@@ -31,7 +31,7 @@ public class UserService {
 
     public UserDto getUser(Long employeeId) {
         UserDto dto = new UserDto();
-        Optional<User> user = userRepository.findById(employeeId);
+        Optional<User> user = userRepository.findByEmployeeId(employeeId);
         if (user.isEmpty())
             throw new UserNotFoundException(employeeId);
 
@@ -46,7 +46,7 @@ public class UserService {
 
     public Long createUser(UserDto userDto) {
         Long id = userDto.getEmployeeId();
-        if (userRepository.findById(id).isPresent())
+        if (userRepository.findByEmployeeId(id).isPresent())
             throw new DuplicateRecordException(String.format("A user with id %s already exists", id));
 
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
@@ -56,45 +56,45 @@ public class UserService {
     }
 
     public void deleteUser(Long employeeId) {
-        if (userRepository.findById(employeeId).isEmpty())
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
         userRepository.deleteById(String.valueOf(employeeId));
     }
 
     public void updateUser(Long employeeId, UserDto newUser) {
-        if (userRepository.findById(employeeId).isEmpty())
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
-        User user = userRepository.findById(employeeId).get();
+        User user = userRepository.findByEmployeeId(employeeId).get();
         user.setPassword(newUser.getPassword());
         userRepository.save(user);
     }
 
     public Set<Authority> getAuthorities(Long employeeId) {
-        if (userRepository.findById(employeeId).isEmpty())
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
-        User user = userRepository.findById(employeeId).get();
+        User user = userRepository.findByEmployeeId(employeeId).get();
         UserDto userDto = fromUser(user);
         return userDto.getAuthorities();
     }
 
     public void addAuthority(Long employeeId, String authority) {
 
-        if (userRepository.findById(employeeId).isEmpty())
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
-        User user = userRepository.findById(employeeId).get();
+        User user = userRepository.findByEmployeeId(employeeId).get();
         user.addAuthority(new Authority(employeeId, authority));
         userRepository.save(user);
     }
 
     public void removeAuthority(Long employeeId, String authority) {
-        if (userRepository.findById(employeeId).isEmpty())
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
-        User user = userRepository.findById(employeeId).get();
+        User user = userRepository.findByEmployeeId(employeeId).get();
         Authority authorityToRemove = user.getAuthorities().stream().filter((a) -> a.getAuthority().equalsIgnoreCase(authority)).findAny().get();
         user.removeAuthority(authorityToRemove);
         userRepository.save(user);

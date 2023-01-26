@@ -1,8 +1,7 @@
-package com.example.HwLes11ANWM.services;
+package nl.novi.EindopdrachtBackend.services;
 
-
-import com.example.HwLes11ANWM.dtos.UserDto;
-import com.example.HwLes11ANWM.models.Authority;
+import nl.novi.EindopdrachtBackend.dtos.UserDto;
+import nl.novi.EindopdrachtBackend.models.Authority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,8 +23,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        UserDto userDto = userService.getUser(username);
-
+        Long employeeId = Long.valueOf(username);
+        UserDto userDto = userService.getUser(employeeId);
 
         String password = userDto.getPassword();
 
@@ -35,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             grantedAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
         }
 
-        return new org.springframework.security.core.userdetails.User(username, password, grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(String.valueOf(employeeId), password, grantedAuthorities);
     }
 
 }

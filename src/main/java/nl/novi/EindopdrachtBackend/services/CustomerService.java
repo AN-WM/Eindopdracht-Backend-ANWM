@@ -6,7 +6,6 @@ import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
 import nl.novi.EindopdrachtBackend.models.Customer;
 import nl.novi.EindopdrachtBackend.models.HearingAid;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
-import nl.novi.EindopdrachtBackend.repositories.EarPieceRepository;
 import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

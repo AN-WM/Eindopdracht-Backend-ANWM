@@ -1,4 +1,4 @@
-package com.example.HwLes11ANWM.utils;
+package nl.novi.EindopdrachtBackend.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

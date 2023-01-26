@@ -20,11 +20,11 @@ public class Customer {
     private String email;
     //private doc document
 
-    @OneToMany(mappedBy = "receipt")
+    @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private List<Receipt> receiptList;
 
-    @OneToMany(mappedBy = "hearingaid")
+    @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private List<HearingAid> hearingAidList;
 

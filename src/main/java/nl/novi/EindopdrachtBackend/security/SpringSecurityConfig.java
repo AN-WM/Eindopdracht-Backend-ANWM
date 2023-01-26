@@ -1,9 +1,7 @@
-package com.example.HwLes11ANWM.security;
+package nl.novi.EindopdrachtBackend.security;
 
-
-import com.example.HwLes11ANWM.filter.JwtRequestFilter;
-import com.example.HwLes11ANWM.services.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.novi.EindopdrachtBackend.filter.JwtRequestFilter;
+import nl.novi.EindopdrachtBackend.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,13 +19,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private final JwtRequestFilter jwtRequestFilter;
 
-
+    public SpringSecurityConfig(CustomUserDetailsService customUserDetailsService, JwtRequestFilter jwtRequestFilter) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -46,44 +45,43 @@ public class SpringSecurityConfig {
     @Bean
     protected SecurityFilterChain filter (HttpSecurity http) throws Exception {
 
-        //JWT token authentication
         http
                 .csrf().disable()
                 .httpBasic().disable()
                 .cors().and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/users").permitAll()
-                .antMatchers(HttpMethod.GET,"/users").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.POST,"/users/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("ADMIN")
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                .requestMatchers(HttpMethod.GET,"/users").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/users/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("ADMIN")
 
-                .antMatchers(HttpMethod.POST,"/cimodules").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.POST,"/remotecontrollers").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.POST,"/televisions").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.POST,"/wallbrackets").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/customers").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/earpieces").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/hearingaids").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/receipts").hasAuthority("ADMIN")
 
-                .antMatchers(HttpMethod.DELETE, "/cimodules/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/remotecontrollers/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/televisions/**").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/wallbrackets/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/customers/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/earpieces/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/hearingaids/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/receipts/**").hasAuthority("ADMIN")
 
-                .antMatchers(HttpMethod.GET,"/cimodules").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/remotecontrollers").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/televisions").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/wallbrackets").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/customers").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/earpieces").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/hearingaids").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/receipts").hasAuthority("USER")
 
-                .antMatchers(HttpMethod.GET,"/cimodules/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/remotecontrollers/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/televisions/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET,"/wallbrackets/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/customers/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/earpieces/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/hearingaids/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.GET,"/receipts/**").hasAuthority("USER")
 
-                .antMatchers(HttpMethod.PUT,"/cimodules/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.PUT,"/remotecontrollers/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.PUT,"/televisions/**").hasAuthority("USER")
-                .antMatchers(HttpMethod.PUT,"/wallbrackets/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT,"/customers/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT,"/earpieces/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT,"/hearingaids/**").hasAuthority("USER")
+                .requestMatchers(HttpMethod.PUT,"/receipts/**").hasAuthority("USER")
 
-                .antMatchers("/authenticated").authenticated()
-                .antMatchers("/authenticate").permitAll()/*allen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
+                .requestMatchers("/authenticated").authenticated()
+                .requestMatchers("/authenticate").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .sessionManagement()
