@@ -10,7 +10,7 @@ public class Authority implements Serializable {
 
     @Id
     @Column(nullable = false)
-    private String username;
+    private Long employeeId;
 
     @Id
     @Column(nullable = false)
@@ -18,16 +18,12 @@ public class Authority implements Serializable {
 
     public Authority() {}
     public Authority(Long employeeId, String authority) {}
-    public Authority(String username, String authority) {
-        this.username = username;
-        this.authority = authority;
-    }
 
-    public String getUsername() {
-        return username;
+    public Long getEmployeeId() {
+        return employeeId;
     }
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
     public String getAuthority() {
         return authority;
