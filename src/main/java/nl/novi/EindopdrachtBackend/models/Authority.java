@@ -17,7 +17,10 @@ public class Authority implements Serializable {
     private String authority;
 
     public Authority() {}
-    public Authority(Long employeeId, String authority) {}
+    public Authority(Long employeeId, String authority) {
+        this.employeeId = employeeId;
+        this.authority = authority;
+    }
 
     public Long getEmployeeId() {
         return employeeId;

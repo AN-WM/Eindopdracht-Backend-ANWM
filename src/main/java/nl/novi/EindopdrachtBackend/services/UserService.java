@@ -51,7 +51,9 @@ public class UserService {
 
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
         userDto.setApikey(randomString);
-        User newUser = userRepository.save(toUser(userDto));
+
+        User newUser = toUser(userDto);
+        userRepository.save(newUser);
         return newUser.getEmployeeId();
     }
 
@@ -67,7 +69,11 @@ public class UserService {
             throw new UserNotFoundException(employeeId);
 
         User user = userRepository.findByEmployeeId(employeeId).get();
+        user.setFirstName(newUser.getFirstName());
+        user.setLastName(newUser.getLastName());
         user.setPassword(newUser.getPassword());
+        user.setDob(newUser.getDob());
+
         userRepository.save(user);
     }
 

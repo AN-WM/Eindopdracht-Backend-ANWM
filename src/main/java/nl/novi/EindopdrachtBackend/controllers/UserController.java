@@ -47,7 +47,7 @@ public class UserController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{employeeId}")
                 .buildAndExpand(newEmployeeId).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{employeeId}")
@@ -55,13 +55,13 @@ public class UserController {
 
         userService.updateUser(employeeId, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping(value = "/{employeeId}")
     public ResponseEntity<Object> deleteUser(@PathVariable("employeeId") Long employeeId) {
         userService.deleteUser(employeeId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Employee " + employeeId + " was removed from the database");
     }
 
     @GetMapping(value = "/{employeeId}/authorities")
@@ -72,9 +72,10 @@ public class UserController {
     @PostMapping(value = "/{employeeId}/authorities")
     public ResponseEntity<Object> addUserAuthority(@PathVariable("employeeId") Long employeeId, @RequestBody Map<String, Object> fields) {
         try {
-            String authorityName = (String) fields.get("authority");
+            //String authorityName = (String) fields.get("authority");
+            String authorityName = fields.get("authority").toString();
             userService.addAuthority(employeeId, authorityName);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Authority " + authorityName + " was added to employee " + employeeId);
         }
         catch (Exception ex) {
             throw new BadRequestException();
@@ -84,7 +85,6 @@ public class UserController {
     @DeleteMapping(value = "/{employeeId}/authorities/{authority}")
     public ResponseEntity<Object> deleteUserAuthority(@PathVariable("employeeId") Long employeeId, @PathVariable("authority") String authority) {
         userService.removeAuthority(employeeId, authority);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Authority " + authority + " was removed from employee " + employeeId);
     }
-
 }

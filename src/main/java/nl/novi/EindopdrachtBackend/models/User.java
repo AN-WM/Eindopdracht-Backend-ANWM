@@ -8,6 +8,7 @@ import java.util.*;
 @Table(name = "users")
 public class User {
     @Id
+    @Column(name = "employee_id", nullable = false)
     private Long employeeId;
     private String firstName;
     private String lastName;
