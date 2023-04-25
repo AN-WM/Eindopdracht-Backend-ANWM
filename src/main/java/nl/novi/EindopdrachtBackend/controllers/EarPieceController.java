@@ -42,7 +42,7 @@ public class EarPieceController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{earPieceId}")
                 .buildAndExpand(newEarPieceId).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{earPieceId}")
@@ -50,7 +50,7 @@ public class EarPieceController {
 
         earpieceService.updateEarPiece(earPieceId, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping(value = "/{earPieceId}")
@@ -58,6 +58,6 @@ public class EarPieceController {
 
         earpieceService.deleteEarPiece(earPieceId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Earpiece with ID " + earPieceId + " was removed from the database");
     }
 }

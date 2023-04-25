@@ -43,7 +43,7 @@ public class CustomerController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{customerId}")
                 .buildAndExpand(newCustomerId).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{customerId}")

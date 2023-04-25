@@ -37,12 +37,6 @@ public class EarPieceService {
     }
 
     public Long createEarPiece(EarPieceDto earPieceDto) {
-        Long id = earPieceDto.getId();
-        Optional<EarPiece> earPiece = earPieceRepository.findById(id);
-
-        if (earPiece.isPresent())
-            throw new DuplicateRecordException(String.format("An earPiece with id %d already exists", id));
-
         EarPiece savedEarPiece = earPieceRepository.save(toEarPiece(earPieceDto));
         return savedEarPiece.getId();
     }

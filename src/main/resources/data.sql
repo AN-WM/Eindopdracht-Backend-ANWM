@@ -8,3 +8,7 @@
   --Customers aanmaken
   INSERT INTO customers (id, first_Name, last_Name, address, zip_Code, city, phone_Number, email) VALUES (10000, 'Bart', 'Ook Klant', 'Schoolstraat 1', '1234 AB', 'Grote Stad', 0987123456, 'bart@testklant.nl');
   INSERT INTO customers (id, first_Name, last_Name, address, zip_Code, city, phone_Number, email) VALUES (10001, 'Piet', 'De Derde', 'Het Plein 101', '1029 AS', 'Het Meer', 0213987654, 'piet@dederde.nl');
+
+--Earpieces aanmaken
+  INSERT INTO earpieces (id, type, colour, size, price) VALUES (10000, 'Open Dome', 'Transparent', 'Large', 0.15);
+  INSERT INTO earpieces (id, type, colour, size, price) VALUES (10001, 'Open', 'Pink', 'Custom', 40);
