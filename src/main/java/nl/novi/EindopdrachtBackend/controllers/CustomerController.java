@@ -51,7 +51,7 @@ public class CustomerController {
 
         customerService.updateCustomer(customerId, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping(value = "/{customerId}")
@@ -59,6 +59,6 @@ public class CustomerController {
 
         customerService.deleteCustomer(customerId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Customer with ID " + customerId + " was removed from the database");
     }
 }

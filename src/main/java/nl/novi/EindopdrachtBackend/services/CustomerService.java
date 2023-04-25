@@ -45,10 +45,10 @@ public class CustomerService {
 
     public Long createCustomer(CustomerDto customerDto) {
         Long id = customerDto.getId();
-        Optional<Customer> customer = customerRepository.findById(id);
-
-        if (customer.isPresent())
-            throw new DuplicateRecordException(String.format("A customer with id %s already exists", id));
+//        Optional<Customer> customer = customerRepository.findById(id);
+//
+//        if (customer.isPresent())
+//            throw new DuplicateRecordException(String.format("A customer with id %s already exists", id));
 
         Customer savedCustomer = customerRepository.save(toCustomer(customerDto));
         return savedCustomer.getId();
