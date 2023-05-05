@@ -42,7 +42,7 @@ public class ReceiptController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{receiptId}")
                 .buildAndExpand(newReceiptId).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{receiptId}")
@@ -50,7 +50,7 @@ public class ReceiptController {
 
         earpieceService.updateReceipt(receiptId, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping(value = "/{receiptId}")
@@ -58,6 +58,6 @@ public class ReceiptController {
 
         earpieceService.deleteReceipt(receiptId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Receipt with ID " + receiptId + " was removed from the database");
     }
 }

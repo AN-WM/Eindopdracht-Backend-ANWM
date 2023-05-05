@@ -42,7 +42,7 @@ public class HearingAidController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productcode}")
                 .buildAndExpand(newProductcode).toUri();
 
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{productcode}")
@@ -50,7 +50,7 @@ public class HearingAidController {
 
         hearingAidService.updateHearingAid(productcode, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping(value = "/{productcode}")
@@ -58,6 +58,6 @@ public class HearingAidController {
 
         hearingAidService.deleteHearingAid(productcode);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Hearing aid with productcode " + productcode + " was removed from the database");
     }
 }

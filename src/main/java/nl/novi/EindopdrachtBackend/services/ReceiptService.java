@@ -46,12 +46,6 @@ public class ReceiptService {
     }
 
     public Long createReceipt(ReceiptDto receiptDto) {
-        Long id = receiptDto.getId();
-        Optional<Receipt> receipt = receiptRepository.findById(id);
-
-        if (receipt.isPresent())
-            throw new DuplicateRecordException(String.format("A receipt with id %d already exists", id));
-
         Receipt savedReceipt = receiptRepository.save(toReceipt(receiptDto));
         return savedReceipt.getId();
     }

@@ -12,3 +12,11 @@
 --Earpieces aanmaken
   INSERT INTO earpieces (id, type, colour, size, price) VALUES (10000, 'Open Dome', 'Transparent', 'Large', 0.15);
   INSERT INTO earpieces (id, type, colour, size, price) VALUES (10001, 'Open', 'Pink', 'Custom', 40);
+
+--Hearing aids aanmaken
+  INSERT INTO hearingaids (productcode, brand, type, colour, price) VALUES ('dj20rg4', 'Phonak', 'Audéo Lumity L90-R', 'Champagne', 3000.00);
+  INSERT INTO hearingaids (productcode, brand, type, colour, price) VALUES ('h389dg4i', 'AudioNova', 'DX 90 R Li T', 'Silver', 500.00);
+
+--Receipts aanmaken
+  INSERT INTO receipts (id, sale_Date) VALUES (10000, '2023-01-02');
+  INSERT INTO receipts (id, sale_Date) VALUES (10001, '2023-01-03');
