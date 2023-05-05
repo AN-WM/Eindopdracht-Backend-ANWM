@@ -1,5 +1,8 @@
 package nl.novi.EindopdrachtBackend.controllers;
 
+import jakarta.validation.Valid;
+import nl.novi.EindopdrachtBackend.dtos.IdInputDto;
+import nl.novi.EindopdrachtBackend.dtos.ProductcodeInputDto;
 import nl.novi.EindopdrachtBackend.dtos.ReceiptDto;
 import nl.novi.EindopdrachtBackend.services.ReceiptService;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +15,16 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/receipts")
 public class ReceiptController {
-    private ReceiptService earpieceService;
+    private final ReceiptService receiptService;
 
-    public ReceiptController(ReceiptService earpieceService) {
-        this.earpieceService = earpieceService;
+    public ReceiptController(ReceiptService receiptService) {
+        this.receiptService = receiptService;
     }
 
     @GetMapping(value = "")
     public ResponseEntity<List<ReceiptDto>> getReceipts() {
 
-        List<ReceiptDto> earpieceDtos = earpieceService.getAllReceipts();
+        List<ReceiptDto> earpieceDtos = receiptService.getAllReceipts();
 
         return ResponseEntity.ok().body(earpieceDtos);
     }
@@ -29,35 +32,50 @@ public class ReceiptController {
     @GetMapping(value = "/{receiptId}")
     public ResponseEntity<ReceiptDto> getReceipt(@PathVariable("receiptId") Long receiptId) {
 
-        ReceiptDto optionalReceipt = earpieceService.getReceipt(receiptId);
+        ReceiptDto optionalReceipt = receiptService.getReceipt(receiptId);
 
         return ResponseEntity.ok().body(optionalReceipt);
     }
 
-    @PostMapping(value = "")
-    public ResponseEntity<ReceiptDto> createReceipt(@RequestBody ReceiptDto dto) {;
-
-        Long newReceiptId = earpieceService.createReceipt(dto);
+    @PostMapping(value = "/{customerId}")
+    public ResponseEntity<Object> createReceipt(@PathVariable("customerId") Long customerId, @RequestBody ReceiptDto dto) {
+        Long newReceiptId = receiptService.createReceipt(dto);
+        receiptService.addCustomer(newReceiptId, customerId);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{receiptId}")
                 .buildAndExpand(newReceiptId).toUri();
 
-        return ResponseEntity.created(location).body(dto);
+        return ResponseEntity.created(location).body(String.format("New receipt created with id %d", newReceiptId));
     }
 
     @PutMapping(value = "/{receiptId}")
     public ResponseEntity<ReceiptDto> updateReceipt(@PathVariable("receiptId") Long receiptId, @RequestBody ReceiptDto dto) {
+        ReceiptDto updatedReceipt = receiptService.updateReceipt(receiptId, dto);
+        return ResponseEntity.ok(updatedReceipt);
+    }
 
-        earpieceService.updateReceipt(receiptId, dto);
+    @PutMapping("/{receiptId}/earpiece")
+    public ResponseEntity<Object> assignEarPieceToReceipt(@PathVariable("receiptId") Long receiptId, @Valid @RequestBody IdInputDto earpieceId) {
+        return receiptService.addEarPiece(receiptId, earpieceId.id);
+    }
 
-        return ResponseEntity.ok(dto);
+    @PutMapping("/{receiptId}/hearingaid")
+    public ResponseEntity<Object> assignHearingAidToReceipt(@PathVariable("receiptId") Long receiptId, @Valid @RequestBody ProductcodeInputDto hearingAidId) {
+        return receiptService.addHearingAid(receiptId, String.valueOf(hearingAidId.productcode));
     }
 
     @DeleteMapping(value = "/{receiptId}")
     public ResponseEntity<Object> deleteReceipt(@PathVariable("receiptId") Long receiptId) {
+        return receiptService.deleteReceipt(receiptId);
+    }
 
-        earpieceService.deleteReceipt(receiptId);
+    @DeleteMapping(value = "/{receiptId}/earpiece")
+    public ResponseEntity<Object> removeEarpieceFromReceipt(@PathVariable("receiptId") Long receiptId, @Valid @RequestBody IdInputDto earpieceId) {
+        return receiptService.removeEarPiece(receiptId, earpieceId.id);
+    }
 
-        return ResponseEntity.ok("Receipt with ID " + receiptId + " was removed from the database");
+    @DeleteMapping(value = "/{receiptId}/hearingaid")
+    public ResponseEntity<Object> removeHearingAidFromReceipt(@PathVariable("receiptId") Long receiptId, @Valid @RequestBody ProductcodeInputDto hearingAidId) {
+        return receiptService.removeHearingAid(receiptId, hearingAidId.productcode);
     }
 }

@@ -13,18 +13,22 @@ import java.util.*;
 @Service
 public class ReceiptService {
 
-    private final ReceiptRepository receiptRepository;
+    private final CustomerRepository customerRepository;
     private final EarPieceRepository earPieceRepository;
     private final HearingAidRepository hearingAidRepository;
+    private final ReceiptRepository receiptRepository;
 
 
     public ReceiptService(
-            ReceiptRepository receiptRepository,
+            CustomerRepository customerRepository,
             EarPieceRepository earPieceRepository,
-            HearingAidRepository hearingAidRepository) {
-        this.receiptRepository = receiptRepository;
+            HearingAidRepository hearingAidRepository,
+            ReceiptRepository receiptRepository
+            ) {
+        this.customerRepository = customerRepository;
         this.earPieceRepository = earPieceRepository;
         this.hearingAidRepository = hearingAidRepository;
+        this.receiptRepository = receiptRepository;
     }
 
 
@@ -65,7 +69,24 @@ public class ReceiptService {
             throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", id));
 
         receiptRepository.deleteById(id);
-        return ResponseEntity.ok("Receipt removed from database");
+        return ResponseEntity.ok(String.format("Receipt with id %d was removed from the database", id));
+    }
+
+    public ResponseEntity<Object> addCustomer(Long receiptId, Long customerId) {
+        if (receiptRepository.findById(receiptId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
+
+        Receipt receipt = receiptRepository.findById(receiptId).get();
+
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        receipt.setCustomer(customer);
+        receiptRepository.save(receipt);
+
+        return ResponseEntity.ok("Customer added to receipt");
     }
 
     public ResponseEntity<Object> addEarPiece(Long receiptId, Long earPieceId) {

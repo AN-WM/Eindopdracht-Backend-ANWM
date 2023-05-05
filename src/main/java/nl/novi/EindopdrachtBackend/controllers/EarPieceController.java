@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/earpieces")
 public class EarPieceController {
-    private EarPieceService earpieceService;
+    private final EarPieceService earpieceService;
 
     public EarPieceController(EarPieceService earpieceService) {
         this.earpieceService = earpieceService;
