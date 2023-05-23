@@ -1,7 +1,8 @@
 package nl.novi.EindopdrachtBackend.services;
 
-import nl.novi.EindopdrachtBackend.dtos.ReceiptDto;
-import nl.novi.EindopdrachtBackend.exceptions.*;
+import nl.novi.EindopdrachtBackend.dtos.HearingAidDto;
+import nl.novi.EindopdrachtBackend.dtos.InputReceiptDto;
+import nl.novi.EindopdrachtBackend.dtos.ReturnReceiptDto;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
 import nl.novi.EindopdrachtBackend.models.*;
 import nl.novi.EindopdrachtBackend.repositories.*;
@@ -32,8 +33,8 @@ public class ReceiptService {
     }
 
 
-    public List<ReceiptDto> getAllReceipts() {
-        List<ReceiptDto> collection = new ArrayList<>();
+    public List<ReturnReceiptDto> getAllReceipts() {
+        List<ReturnReceiptDto> collection = new ArrayList<>();
         List<Receipt> list = receiptRepository.findAll();
         for (Receipt receipt : list) {
             collection.add(fromReceipt(receipt));
@@ -41,7 +42,7 @@ public class ReceiptService {
         return collection;
     }
 
-    public ReceiptDto getReceipt(Long id) {
+    public ReturnReceiptDto getReceipt(Long id) {
         Optional<Receipt> receipt = receiptRepository.findById(id);
         if (receipt.isEmpty())
             throw new IndexOutOfBoundsException(String.format("ID %d was not found", id));
@@ -49,18 +50,18 @@ public class ReceiptService {
         return fromReceipt(receipt.get());
     }
 
-    public Long createReceipt(ReceiptDto receiptDto) {
+    public Long createReceipt(InputReceiptDto receiptDto) {
         Receipt savedReceipt = receiptRepository.save(toReceipt(receiptDto));
         return savedReceipt.getId();
     }
 
-    public ReceiptDto updateReceipt(Long receiptId, ReceiptDto receiptDto) {
+    public Optional<Receipt> updateReceipt(Long receiptId, InputReceiptDto receiptDto) {
         Optional<Receipt> receipt = receiptRepository.findById(receiptId);
         if (receipt.isEmpty())
             throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
 
         receiptRepository.save(toReceipt(receiptDto));
-        return receiptDto;
+        return receiptRepository.findById(receiptId);
     }
 
     public ResponseEntity<Object> deleteReceipt(Long id) {
@@ -72,7 +73,7 @@ public class ReceiptService {
         return ResponseEntity.ok(String.format("Receipt with id %d was removed from the database", id));
     }
 
-    public ResponseEntity<Object> addCustomer(Long receiptId, Long customerId) {
+    public void addCustomer(Long receiptId, Long customerId) {
         if (receiptRepository.findById(receiptId).isEmpty())
             throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
 
@@ -85,8 +86,6 @@ public class ReceiptService {
 
         receipt.setCustomer(customer);
         receiptRepository.save(receipt);
-
-        return ResponseEntity.ok("Customer added to receipt");
     }
 
     public ResponseEntity<Object> addEarPiece(Long receiptId, Long earPieceId) {
@@ -157,22 +156,30 @@ public class ReceiptService {
         return ResponseEntity.ok("Hearing aid removed from receipt");
     }
 
-    public Receipt toReceipt(ReceiptDto dto) {
+    public Receipt toReceipt(InputReceiptDto dto) {
         var receipt = new Receipt();
 
         receipt.setId(dto.getId());
         receipt.setSaleDate(dto.getSaleDate());
+        receipt.setCustomer(dto.getCustomer());
 
         return receipt;
     }
 
     // Dit is de vertaalmethode van Receipt naar ReceiptDto
-    public ReceiptDto fromReceipt(Receipt receipt) {
-        ReceiptDto dto = new ReceiptDto();
+    public ReturnReceiptDto fromReceipt(Receipt receipt) {
+        ReturnReceiptDto dto = new ReturnReceiptDto();
+
 
         dto.setId(receipt.getId());
         dto.setSaleDate(receipt.getSaleDate());
-
+        dto.setCustomerDto(receipt.getCustomer());
+        dto.setEarPieceDtoList(receipt.getEarPieceList());
+        dto.setHearingAidDtoList(receipt.getHearingAidList());
+//        dto.setCustomer(receipt.getCustomer());
+//        dto.setEarPieceList(receipt.getEarPieceList());
+//        dto.setHearingAidList(receipt.getHearingAidList());
+//        dto.setHearingAidDtoList(receipt.getHearingAidList());
         return dto;
     }
 }

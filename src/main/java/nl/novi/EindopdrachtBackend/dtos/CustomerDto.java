@@ -11,7 +11,6 @@ public class CustomerDto {
     private String address;
     private String zipCode;
     private String city;
-    @Digits(integer = 10, fraction = 0)
     private int phoneNumber;
     @Email
     private String email;

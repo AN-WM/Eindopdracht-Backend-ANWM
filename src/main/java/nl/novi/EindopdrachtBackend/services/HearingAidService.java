@@ -78,7 +78,19 @@ public class HearingAidService {
     }
 
     // Dit is de vertaalmethode van HearingAid naar HearingAidDto
-    public HearingAidDto fromHearingAid(HearingAid hearingAid) {
+//    public HearingAidDto fromHearingAid(HearingAid hearingAid) {
+//        HearingAidDto dto = new HearingAidDto();
+//
+//        dto.setProductcode(hearingAid.getProductcode());
+//        dto.setBrand(hearingAid.getBrand());
+//        dto.setType(hearingAid.getType());
+//        dto.setColour(hearingAid.getColour());
+//        dto.setPrice(hearingAid.getPrice());
+//
+//        return dto;
+//    }
+
+    public static HearingAidDto fromHearingAid(HearingAid hearingAid) {
         HearingAidDto dto = new HearingAidDto();
 
         dto.setProductcode(hearingAid.getProductcode());

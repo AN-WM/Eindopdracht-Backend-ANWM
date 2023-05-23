@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "receipts")
 public class Receipt {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,6 +26,9 @@ public class Receipt {
     @OneToMany
     @JsonIgnore
     private List<EarPiece> earPieceList;
+
+    public Receipt() {
+    }
 
     public Long getId() {
         return id;

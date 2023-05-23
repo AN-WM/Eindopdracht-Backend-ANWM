@@ -72,7 +72,7 @@ public class EarPieceService {
     }
 
     // Dit is de vertaalmethode van EarPiece naar EarPieceDto
-    public EarPieceDto fromEarPiece(EarPiece earPiece) {
+    public static EarPieceDto fromEarPiece(EarPiece earPiece) {
         EarPieceDto dto = new EarPieceDto();
 
         dto.setId(earPiece.getId());

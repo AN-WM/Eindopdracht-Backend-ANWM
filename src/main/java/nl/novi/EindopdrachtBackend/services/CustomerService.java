@@ -1,12 +1,13 @@
 package nl.novi.EindopdrachtBackend.services;
 
 import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
-import nl.novi.EindopdrachtBackend.exceptions.DuplicateRecordException;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
 import nl.novi.EindopdrachtBackend.models.Customer;
 import nl.novi.EindopdrachtBackend.models.HearingAid;
+import nl.novi.EindopdrachtBackend.models.Receipt;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
 import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
+import nl.novi.EindopdrachtBackend.repositories.ReceiptRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +18,16 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final HearingAidRepository hearingAidRepository;
+    private final ReceiptRepository receiptRepository;
 
     public CustomerService(
             CustomerRepository customerRepository,
-            HearingAidRepository hearingAidRepository) {
+            HearingAidRepository hearingAidRepository,
+            ReceiptRepository receiptRepository) {
 
         this.customerRepository = customerRepository;
         this.hearingAidRepository = hearingAidRepository;
+        this.receiptRepository = receiptRepository;
     }
 
     public List<CustomerDto> getAllCustomers() {
@@ -100,7 +104,24 @@ public class CustomerService {
         return ResponseEntity.ok("Hearing aid removed from customer");
     }
 
-    public Customer toCustomer(CustomerDto dto) {
+    public ResponseEntity<Object> addReceipt(Long customerId, Long receiptId) {
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        if (receiptRepository.findById(receiptId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Hearing aid with id %d was not found", receiptId));
+
+        Receipt receipt = receiptRepository.findById(receiptId).get();
+
+        customer.addReceipt(receipt);
+        customerRepository.save(customer);
+
+        return ResponseEntity.ok("Hearing aid added to customer");
+    }
+
+    public static Customer toCustomer(CustomerDto dto) {
         var customer = new Customer();
 
         customer.setId(dto.getId());
@@ -116,7 +137,7 @@ public class CustomerService {
     }
 
     // Dit is de vertaalmethode van Customer naar CustomerDto
-    public CustomerDto fromCustomer(Customer customer) {
+    public static CustomerDto fromCustomer(Customer customer) {
         CustomerDto dto = new CustomerDto();
 
         dto.setId(customer.getId());

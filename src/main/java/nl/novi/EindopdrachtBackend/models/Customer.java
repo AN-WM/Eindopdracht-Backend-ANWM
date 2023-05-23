@@ -115,4 +115,8 @@ public class Customer {
     public void removeHearingAid(HearingAid hearingAid) {
         this.hearingAidList.remove(hearingAid);
     }
+
+    public void addReceipt(Receipt receipt) { this.receiptList.add(receipt); }
+
+    public void removeReceipt(Receipt receipt) {this.receiptList.remove(receipt); }
 }
