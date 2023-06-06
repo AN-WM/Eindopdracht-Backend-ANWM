@@ -23,6 +23,17 @@ public class HearingAid {
     @OneToOne(mappedBy = "hearingAid")
     private EarPiece earPiece;
 
+    public HearingAid(String productcode, String brand, String type, String colour, double price) {
+    this.productcode = productcode;
+    this.brand = brand;
+    this.type = type;
+    this.colour = colour;
+    this.price = price;
+    }
+
+    public HearingAid() {
+    }
+
     public String getProductcode() {
         return productcode;
     }

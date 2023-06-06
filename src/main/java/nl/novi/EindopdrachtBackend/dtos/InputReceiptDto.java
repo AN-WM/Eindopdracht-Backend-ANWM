@@ -12,6 +12,11 @@ public class InputReceiptDto {
     public InputReceiptDto() {
     }
 
+    public InputReceiptDto(long id  , Date saleDate) {
+        this.id = id;
+        this.saleDate = saleDate;
+    }
+
     public Long getId() {
         return id;
     }

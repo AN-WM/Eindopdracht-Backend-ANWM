@@ -28,6 +28,32 @@ public class Customer {
     @JsonIgnore
     private List<HearingAid> hearingAidList;
 
+    public Customer(){};
+
+    public Customer(Long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.zipCode = zipCode;
+        this.city = city;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    public Customer(Long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email, List<Receipt> receiptList, List<HearingAid> hearingAidList) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.zipCode = zipCode;
+        this.city = city;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.receiptList = receiptList;
+        this.hearingAidList = hearingAidList;
+    }
+
     public Long getId() {
         return id;
     }

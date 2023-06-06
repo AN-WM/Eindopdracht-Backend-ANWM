@@ -111,7 +111,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(customerId).get();
 
         if (receiptRepository.findById(receiptId).isEmpty())
-            throw new IndexOutOfBoundsException(String.format("Hearing aid with id %d was not found", receiptId));
+            throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
 
         Receipt receipt = receiptRepository.findById(receiptId).get();
 

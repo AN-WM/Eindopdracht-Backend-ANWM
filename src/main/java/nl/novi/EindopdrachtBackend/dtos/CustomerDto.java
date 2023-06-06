@@ -19,6 +19,17 @@ public class CustomerDto {
     public CustomerDto() {
     }
 
+    public CustomerDto(long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.zipCode = zipCode;
+        this.city = city;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }

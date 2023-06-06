@@ -25,7 +25,7 @@ public class ReceiptService {
             EarPieceRepository earPieceRepository,
             HearingAidRepository hearingAidRepository,
             ReceiptRepository receiptRepository
-            ) {
+    ) {
         this.customerRepository = customerRepository;
         this.earPieceRepository = earPieceRepository;
         this.hearingAidRepository = hearingAidRepository;
@@ -169,17 +169,21 @@ public class ReceiptService {
     // Dit is de vertaalmethode van Receipt naar ReceiptDto
     public ReturnReceiptDto fromReceipt(Receipt receipt) {
         ReturnReceiptDto dto = new ReturnReceiptDto();
-
+        Optional<Customer> foundCustomer = Optional.ofNullable(receipt.getCustomer());
+        Optional<List> foundEarPieceList = Optional.ofNullable(receipt.getEarPieceList());
+        Optional<List> foundHearingAidList = Optional.ofNullable(receipt.getHearingAidList());
 
         dto.setId(receipt.getId());
         dto.setSaleDate(receipt.getSaleDate());
-        dto.setCustomerDto(receipt.getCustomer());
-        dto.setEarPieceDtoList(receipt.getEarPieceList());
-        dto.setHearingAidDtoList(receipt.getHearingAidList());
-//        dto.setCustomer(receipt.getCustomer());
-//        dto.setEarPieceList(receipt.getEarPieceList());
-//        dto.setHearingAidList(receipt.getHearingAidList());
-//        dto.setHearingAidDtoList(receipt.getHearingAidList());
+        if (foundCustomer.isPresent()) {
+            dto.setCustomerDto(receipt.getCustomer());
+        }
+        if (foundEarPieceList.isPresent()) {
+            dto.setEarPieceDtoList(receipt.getEarPieceList());
+        }
+        if (foundHearingAidList.isPresent()) {
+            dto.setHearingAidDtoList(receipt.getHearingAidList());
+        }
         return dto;
     }
 }

@@ -17,13 +17,16 @@ public class ReturnReceiptDto {
 
     public Long id;
     public Date saleDate;
-//    public Customer customer;
     public CustomerDto customerDto;
-//    private List<EarPiece> earPieceList;
     private List<EarPieceDto> earPieceDtoList = new ArrayList<>();
     private List<HearingAidDto> hearingAidDtoList = new ArrayList<>();
 
     public ReturnReceiptDto() {
+    }
+
+    public ReturnReceiptDto(long id, Date saleDate) {
+        this.id = id;
+        this.saleDate = saleDate;
     }
 
     public Long getId() {
@@ -42,71 +45,25 @@ public class ReturnReceiptDto {
         this.saleDate = saleDate;
     }
 
-    public CustomerDto getCustomerDto(Customer customer) {
-        return CustomerService.fromCustomer(customer);
-    }
+    public CustomerDto getCustomerDto() { return this.customerDto; }
 
     public void setCustomerDto(Customer customer) {
         this.customerDto = CustomerService.fromCustomer(customer);
     }
 
-    public List<HearingAidDto> getHearingAidDtoList(List<HearingAid> hearingAidList) {
-        List<HearingAidDto> dtoList = null;
-
-        for (HearingAid hearingAid : hearingAidList) {
-            dtoList.add(HearingAidService.fromHearingAid(hearingAid));
-        }
-
-        return dtoList;
-    }
+    public List<HearingAidDto> getHearingAidDtoList() { return this.hearingAidDtoList; }
 
     public void setHearingAidDtoList(List<HearingAid> hearingAidList) {
-       // hearingAidDtoList.clear();
-
         for (HearingAid hearingAid : hearingAidList) {
             hearingAidDtoList.add(HearingAidService.fromHearingAid(hearingAid));
         }
     }
 
-    public List<EarPieceDto> getEarPieceDtoList(List <EarPiece> earPieceList) {
-        List<EarPieceDto> dtoList = new ArrayList<>();
-
-        for (EarPiece earPiece : earPieceList) {
-            dtoList.add(EarPieceService.fromEarPiece(earPiece));
-        }
-
-        return dtoList;
-    }
+    public List<EarPieceDto> getEarPieceDtoList() { return this.earPieceDtoList; }
 
     public void setEarPieceDtoList(List<EarPiece> earPieceList) {
-//        earPieceDtoList = null;
-
         for (EarPiece earpiece : earPieceList) {
             earPieceDtoList.add(EarPieceService.fromEarPiece(earpiece));
         }
     }
-
-//    public Customer getCustomer() {
-//        return customer;
-//    }
-//
-//    public void setCustomer(Customer customer) {
-//        this.customer = customer;
-//    }
-//
-//    public List<HearingAid> getHearingAidList() {
-//        return hearingAidList;
-//    }
-//
-//    public void setHearingAidList(List<HearingAid> hearingAidList) {
-//        this.hearingAidList = hearingAidList;
-//    }
-//
-//    public List<EarPiece> getEarPieceList() {
-//        return earPieceList;
-//    }
-//
-//    public void setEarPieceList(List<EarPiece> earPieceList) {
-//        this.earPieceList = earPieceList;
-//    }
 }

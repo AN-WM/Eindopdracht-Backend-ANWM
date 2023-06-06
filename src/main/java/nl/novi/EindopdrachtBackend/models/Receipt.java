@@ -30,6 +30,19 @@ public class Receipt {
     public Receipt() {
     }
 
+    public Receipt(Long id, Date saleDate) {
+        this.id = id;
+        this.saleDate = saleDate;
+    }
+
+    public Receipt(long id, Date saleDate, Customer customer, List<HearingAid> hearingAidList, List<EarPiece> earPieceList) {
+        this.id = id;
+        this.saleDate = saleDate;
+        this.customer = customer;
+        this.hearingAidList = hearingAidList;
+        this.earPieceList = earPieceList;
+    }
+
     public Long getId() {
         return id;
     }

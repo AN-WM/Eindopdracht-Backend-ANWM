@@ -20,6 +20,16 @@ public class EarPiece {
     @OneToOne
     private HearingAid hearingAid;
 
+    public EarPiece(){}
+
+    public EarPiece(long id, String type, String colour, String size, double price) {
+        this.id = id;
+        this.type = type;
+        this.colour = colour;
+        this.size = size;
+        this.price = price;
+    }
+
     public Long getId() {
         return id;
     }
