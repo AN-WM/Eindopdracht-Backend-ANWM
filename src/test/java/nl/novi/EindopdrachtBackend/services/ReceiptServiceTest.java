@@ -1,7 +1,5 @@
 package nl.novi.EindopdrachtBackend.services;
 
-import net.bytebuddy.asm.Advice;
-import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.dtos.InputReceiptDto;
 import nl.novi.EindopdrachtBackend.dtos.ReturnReceiptDto;
 import nl.novi.EindopdrachtBackend.models.Customer;
@@ -21,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,8 +49,6 @@ class ReceiptServiceTest {
     ArgumentCaptor<Receipt> captor;
 
     Customer customer1;
-    Customer customer2;
-    CustomerDto customerDto1;
     HearingAid hearingAid1;
     HearingAid hearingAid2;
     List<HearingAid> hearingAidList;
@@ -63,26 +60,21 @@ class ReceiptServiceTest {
     InputReceiptDto updateDto;
     Receipt updatedReceipt;
 
-    List<Receipt> receiptList;
-
     @BeforeEach
     void setUp() {
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
         hearingAid2 = new HearingAid("tha2", "Widex", "Moment Sheer 440 sRIC R D", "Beige", 1995);
-        earPiece1 = new EarPiece(1L, "AHO", "Brown", "Custom", 80.94);
-        receipt1 = new Receipt(1L, new Date(01 - 01 - 2023));
-        inputReceiptDto1 = new InputReceiptDto(1L, new Date(01 - 01 - 2023));
+        earPiece1 = new EarPiece(1L, "Custom", "Brown", "Custom", 80.94);
+        receipt1 = new Receipt(1L, LocalDate.of(2023, 1, 1));
+        inputReceiptDto1 = new InputReceiptDto(1L, LocalDate.of(2023, 1, 1));
         hearingAidList = new ArrayList<>();
         earPieceList = new ArrayList<>();
-        receiptList = new ArrayList<>();
         hearingAidList.add(hearingAid1);
         earPieceList.add(earPiece1);
         customer1 = new Customer(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        customer2 = new Customer(2L, "Beta", "Tester", "Molenplein 1", "1234 AB", "De Stad", 1234567890, "betatester@home.nl", receiptList, hearingAidList);
-        customerDto1 = new CustomerDto(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        updateDto =  new InputReceiptDto(1L, new Date(01 - 06 - 2023));
-        updatedReceipt = new Receipt(1L, new Date(01 - 06 - 2023));
-        receipt2 = new Receipt(2L, new Date(24-02-2023), customer1, hearingAidList, earPieceList);
+        updateDto =  new InputReceiptDto(1L, LocalDate.of(2023, 6, 1));
+        updatedReceipt = new Receipt(1L, LocalDate.of(2023, 6, 1));
+        receipt2 = new Receipt(2L, LocalDate.of(2023, 2, 24), customer1, hearingAidList, earPieceList);
 
     }
 
@@ -94,10 +86,7 @@ class ReceiptServiceTest {
         receipt2 = null;
         inputReceiptDto1 = null;
         hearingAidList = null;
-        receiptList = null;
         customer1 = null;
-        customer2 = null;
-        customerDto1 = null;
         updateDto = null;
         updatedReceipt = null;
     }
@@ -123,7 +112,7 @@ class ReceiptServiceTest {
 
         ReturnReceiptDto result = receiptService.getReceipt(1L);
 
-        assertEquals(new Date(01 - 01 - 2023), result.getSaleDate());
+        assertEquals(LocalDate.of(2023, 1, 1), result.getSaleDate());
     }
 
     @Test

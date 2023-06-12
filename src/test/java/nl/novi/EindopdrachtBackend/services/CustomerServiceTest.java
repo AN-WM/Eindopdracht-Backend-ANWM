@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,7 @@ class CustomerServiceTest {
     void setup() {
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
         hearingAid2 = new HearingAid("tha2", "Widex", "Moment Sheer 440 sRIC R D", "Beige", 1995);
-        receipt1 = new Receipt(1L, new Date(01 - 01 - 2023));
+        receipt1 = new Receipt(1L, LocalDate.of(2023, 1, 1));
         hearingAidList = new ArrayList<>();
         receiptList = new ArrayList<>();
         hearingAidList.add(hearingAid1);

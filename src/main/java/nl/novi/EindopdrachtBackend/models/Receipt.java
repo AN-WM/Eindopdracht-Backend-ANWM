@@ -3,6 +3,7 @@ package nl.novi.EindopdrachtBackend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class Receipt {
     @Id
     @GeneratedValue
     private Long id;
-    private Date saleDate;
+    private LocalDate saleDate;
 
     @ManyToOne
     @JoinColumn(name="customer_id")
@@ -30,12 +31,12 @@ public class Receipt {
     public Receipt() {
     }
 
-    public Receipt(Long id, Date saleDate) {
+    public Receipt(Long id, LocalDate saleDate) {
         this.id = id;
         this.saleDate = saleDate;
     }
 
-    public Receipt(long id, Date saleDate, Customer customer, List<HearingAid> hearingAidList, List<EarPiece> earPieceList) {
+    public Receipt(long id, LocalDate saleDate, Customer customer, List<HearingAid> hearingAidList, List<EarPiece> earPieceList) {
         this.id = id;
         this.saleDate = saleDate;
         this.customer = customer;
@@ -51,11 +52,11 @@ public class Receipt {
         this.id = id;
     }
 
-    public Date getSaleDate() {
+    public LocalDate getSaleDate() {
         return saleDate;
     }
 
-    public void setSaleDate(Date saleDate) {
+    public void setSaleDate(LocalDate saleDate) {
         this.saleDate = saleDate;
     }
 
