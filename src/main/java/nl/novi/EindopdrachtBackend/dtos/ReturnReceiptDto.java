@@ -7,6 +7,7 @@ import nl.novi.EindopdrachtBackend.services.CustomerService;
 import nl.novi.EindopdrachtBackend.services.EarPieceService;
 import nl.novi.EindopdrachtBackend.services.HearingAidService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ReturnReceiptDto {
     private HearingAidService hearingAidService;
 
     public Long id;
-    public Date saleDate;
+    public LocalDate saleDate;
     public CustomerDto customerDto;
     private List<EarPieceDto> earPieceDtoList = new ArrayList<>();
     private List<HearingAidDto> hearingAidDtoList = new ArrayList<>();
@@ -24,7 +25,7 @@ public class ReturnReceiptDto {
     public ReturnReceiptDto() {
     }
 
-    public ReturnReceiptDto(long id, Date saleDate) {
+    public ReturnReceiptDto(long id, LocalDate saleDate) {
         this.id = id;
         this.saleDate = saleDate;
     }
@@ -37,11 +38,11 @@ public class ReturnReceiptDto {
         this.id = id;
     }
 
-    public Date getSaleDate() {
+    public LocalDate getSaleDate() {
         return saleDate;
     }
 
-    public void setSaleDate(Date saleDate) {
+    public void setSaleDate(LocalDate saleDate) {
         this.saleDate = saleDate;
     }
 

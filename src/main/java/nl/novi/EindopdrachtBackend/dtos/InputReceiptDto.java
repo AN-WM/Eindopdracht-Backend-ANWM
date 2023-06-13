@@ -2,17 +2,18 @@ package nl.novi.EindopdrachtBackend.dtos;
 
 import nl.novi.EindopdrachtBackend.models.Customer;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class InputReceiptDto {
     public Long id;
-    public Date saleDate;
+    public LocalDate saleDate;
     public Customer customer;
 
     public InputReceiptDto() {
     }
 
-    public InputReceiptDto(long id  , Date saleDate) {
+    public InputReceiptDto(long id  , LocalDate saleDate) {
         this.id = id;
         this.saleDate = saleDate;
     }
@@ -25,11 +26,11 @@ public class InputReceiptDto {
         this.id = id;
     }
 
-    public Date getSaleDate() {
+    public LocalDate getSaleDate() {
         return saleDate;
     }
 
-    public void setSaleDate(Date saleDate) {
+    public void setSaleDate(LocalDate saleDate) {
         this.saleDate = saleDate;
     }
 
