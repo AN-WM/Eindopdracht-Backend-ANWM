@@ -2,12 +2,15 @@ package nl.novi.EindopdrachtBackend.dtos;
 
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
+
 public class CustomerDto {
     private Long id;
     @NotBlank
     private String firstName;
     @NotBlank
     private String lastName;
+    private LocalDate dob;
     private String address;
     private String zipCode;
     private String city;
@@ -19,10 +22,11 @@ public class CustomerDto {
     public CustomerDto() {
     }
 
-    public CustomerDto(long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email) {
+    public CustomerDto(long id, String firstName, String lastName, LocalDate dob, String address, String zipCode, String city, int phoneNumber, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.dob = dob;
         this.address = address;
         this.zipCode = zipCode;
         this.city = city;

@@ -19,6 +19,11 @@ public class EarPieceService {
         this.earPieceRepository = earPieceRepository;
     }
 
+    public Long createEarPiece(EarPieceDto earPieceDto) {
+        EarPiece savedEarPiece = earPieceRepository.save(toEarPiece(earPieceDto));
+        return savedEarPiece.getId();
+    }
+
     public List<EarPieceDto> getAllEarpieces() {
         List<EarPieceDto> collection = new ArrayList<>();
         List<EarPiece> list = earPieceRepository.findAll();
@@ -34,11 +39,6 @@ public class EarPieceService {
             throw new IndexOutOfBoundsException(String.format("ID %d was not found", id));
 
         return fromEarPiece(earPiece.get());
-    }
-
-    public Long createEarPiece(EarPieceDto earPieceDto) {
-        EarPiece savedEarPiece = earPieceRepository.save(toEarPiece(earPieceDto));
-        return savedEarPiece.getId();
     }
 
     public EarPieceDto updateEarPiece(Long earPieceId, EarPieceDto earPieceDto) {

@@ -1,11 +1,9 @@
 package nl.novi.EindopdrachtBackend.services;
 
 import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
-import nl.novi.EindopdrachtBackend.models.Customer;
-import nl.novi.EindopdrachtBackend.models.EarPiece;
-import nl.novi.EindopdrachtBackend.models.HearingAid;
-import nl.novi.EindopdrachtBackend.models.Receipt;
+import nl.novi.EindopdrachtBackend.models.*;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
+import nl.novi.EindopdrachtBackend.repositories.DocumentRepository;
 import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
 import nl.novi.EindopdrachtBackend.repositories.ReceiptRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +14,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +35,8 @@ class CustomerServiceTest {
     HearingAidRepository hearingAidRepository;
     @Mock
     ReceiptRepository receiptRepository;
+    @Mock
+    DocumentRepository documentRepository;
 
     @InjectMocks
     CustomerService customerService;
@@ -53,20 +54,25 @@ class CustomerServiceTest {
     List<HearingAid> hearingAidList;
     Receipt receipt1;
     List<Receipt> receiptList;
+    Document document1;
+    List<Document> documentList;
 
     @BeforeEach
     void setup() {
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
         hearingAid2 = new HearingAid("tha2", "Widex", "Moment Sheer 440 sRIC R D", "Beige", 1995);
-        receipt1 = new Receipt(1L, LocalDate.of(2023, 1, 1));
+        receipt1 = new Receipt(1L);
         hearingAidList = new ArrayList<>();
         receiptList = new ArrayList<>();
         hearingAidList.add(hearingAid1);
-        customer1 = new Customer(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        customer2 = new Customer(2L, "Beta", "Tester", "Molenplein 1", "1234 AB", "De Stad", 1234567890, "betatester@home.nl", receiptList, hearingAidList);
-        updatedCustomer = new Customer(1L, "Alfa", "de Tester", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        customerDto1 = new CustomerDto(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        updateDto = new CustomerDto(1L, "Alfa", "de Tester", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        document1 = new Document(1L, "testDocument.pdf");
+        documentList = new ArrayList<>();
+        documentList.add(document1);
+        customer1 = new Customer(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        customer2 = new Customer(2L, "Beta", "Tester", LocalDate.of(1980, 01, 01), "Molenplein 1", "1234 AB", "De Stad", 1234567890, "betatester@home.nl", receiptList, hearingAidList, documentList);
+        updatedCustomer = new Customer(1L, "Alfa", "de Tester", LocalDate.of(1990, 05, 06),  "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        customerDto1 = new CustomerDto(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        updateDto = new CustomerDto(1L, "Alfa", "de Tester", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
     }
 
     @AfterEach
@@ -81,6 +87,7 @@ class CustomerServiceTest {
         updatedCustomer = null;
         customerDto1 = null;
         updateDto = null;
+        document1 = null;
     }
 
     @Test
@@ -91,7 +98,7 @@ class CustomerServiceTest {
                 .thenReturn(Optional.ofNullable(customer1));
 
         //Act
-        CustomerDto result = customerService.getCustomer(1L);
+        CustomerDto result = customerService.getCustomer(1L).getBody();
 
         //Assert
         assertEquals("Alfa", result.getFirstName());
@@ -110,10 +117,10 @@ class CustomerServiceTest {
     void getAllCustomers() {
         Mockito.when(customerRepository.findAll()).thenReturn(List.of(customer1, customer2));
 
-        List<CustomerDto> customerList = customerService.getAllCustomers();
+        ResponseEntity<List<CustomerDto>> customerList = customerService.getAllCustomers();
 
-        assertEquals(customer1.getId(), customerList.get(0).getId());
-        assertEquals(customer2.getId(), customerList.get(1).getId());
+        assertEquals(customer1.getId(), customerList.getBody().get(0).getId());
+        assertEquals(customer2.getId(), customerList.getBody().get(1).getId());
     }
 
     @Test
@@ -213,7 +220,7 @@ class CustomerServiceTest {
         Customer result = captor.getValue();
 
         assertEquals(2L, result.getId());
-        assertEquals(true, result.getHearingAidList().isEmpty());
+        assertTrue(result.getHearingAidList().isEmpty());
     }
 
     @Test
@@ -253,5 +260,59 @@ class CustomerServiceTest {
 
         assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
                 () -> customerService.addReceipt(1L, 3L));
+    }
+
+    @Test
+    void testAddDocument() {
+        when(customerRepository.findById(2L)).thenReturn(Optional.of(customer2));
+        when(documentRepository.findByDocName(anyString())).thenReturn(Optional.of(document1));
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer2);
+
+        customerService.addDocument(2L, "TestDoc.pdf");
+        verify(customerRepository, times(1)).save(captor.capture());
+        Customer result = captor.getValue();
+
+        assertEquals(2L, result.getId());
+        assertEquals(1L, result.getDocumentList().get(0).getId());
+    }
+
+    @Test
+    void testAddDocumentThrowsCustomerException() {
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> customerService.addDocument(4L, "testDocument.pdf"));
+    }
+    @Test
+    void testAddDocumentThrowsDocumentException() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer1));
+
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> customerService.addDocument(1L, "nonExisting.doc"));
+    }
+
+    @Test
+    void testRemoveDocument() {
+        when(customerRepository.findById(2L)).thenReturn(Optional.of(customer2));
+        when(documentRepository.findByDocName(anyString())).thenReturn(Optional.of(document1));
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer2);
+
+        customerService.removeDocument(2L, "testDocument.pdf");
+        verify(customerRepository, times(1)).save(captor.capture());
+        Customer result = captor.getValue();
+
+        assertEquals(2L, result.getId());
+        assertTrue(result.getDocumentList().isEmpty());
+    }
+
+    @Test
+    void testRemoveDocumentThrowsCustomerException() {
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> customerService.removeDocument(4L, "testDocument.pdf"));
+    }
+    @Test
+    void testRemoveDocumentThrowsDocumentException() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer1));
+
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> customerService.removeDocument(1L, "nonExisting.doc"));
     }
 }

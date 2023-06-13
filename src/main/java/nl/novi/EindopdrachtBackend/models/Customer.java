@@ -2,7 +2,9 @@ package nl.novi.EindopdrachtBackend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -13,12 +15,12 @@ public class Customer {
     private Long id;
     private String firstName;
     private String lastName;
+    private LocalDate dob;
     private String address;
     private String zipCode;
     private String city;
     private int phoneNumber;
     private String email;
-    //private doc document
 
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
@@ -28,12 +30,25 @@ public class Customer {
     @JsonIgnore
     private List<HearingAid> hearingAidList;
 
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    private List<Document> documentList;
+
     public Customer(){};
 
-    public Customer(Long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email) {
+    public Customer(Long id,
+                    String firstName,
+                    String lastName,
+                    LocalDate dob,
+                    String address,
+                    String zipCode,
+                    String city,
+                    int phoneNumber,
+                    String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.dob = dob;
         this.address = address;
         this.zipCode = zipCode;
         this.city = city;
@@ -41,10 +56,22 @@ public class Customer {
         this.email = email;
     }
 
-    public Customer(Long id, String firstName, String lastName, String address, String zipCode, String city, int phoneNumber, String email, List<Receipt> receiptList, List<HearingAid> hearingAidList) {
+    public Customer(Long id,
+                    String firstName,
+                    String lastName,
+                    LocalDate dob,
+                    String address,
+                    String zipCode,
+                    String city,
+                    int phoneNumber,
+                    String email,
+                    List<Receipt> receiptList,
+                    List<HearingAid> hearingAidList,
+                    List<Document> documentList) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.dob = dob;
         this.address = address;
         this.zipCode = zipCode;
         this.city = city;
@@ -52,6 +79,7 @@ public class Customer {
         this.email = email;
         this.receiptList = receiptList;
         this.hearingAidList = hearingAidList;
+        this.documentList = documentList;
     }
 
     public Long getId() {
@@ -76,6 +104,14 @@ public class Customer {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 
     public String getAddress() {
@@ -118,14 +154,6 @@ public class Customer {
         this.email = email;
     }
 
-    public List<Receipt> getReceiptList() {
-        return receiptList;
-    }
-
-    public void setReceiptList(List<Receipt> receiptList) {
-        this.receiptList = receiptList;
-    }
-
     public List<HearingAid> getHearingAidList() {
         return hearingAidList;
     }
@@ -142,7 +170,35 @@ public class Customer {
         this.hearingAidList.remove(hearingAid);
     }
 
-    public void addReceipt(Receipt receipt) { this.receiptList.add(receipt); }
+    public List<Receipt> getReceiptList() {
+        return receiptList;
+    }
 
-    public void removeReceipt(Receipt receipt) {this.receiptList.remove(receipt); }
+    public void setReceiptList(List<Receipt> receiptList) {
+        this.receiptList = receiptList;
+    }
+
+    public void addReceipt(Receipt receipt) {
+        this.receiptList.add(receipt);
+    }
+
+    public void removeReceipt(Receipt receipt) {
+        this.receiptList.remove(receipt);
+    }
+
+    public List<Document> getDocumentList(){
+        return documentList;
+    }
+
+    public void setDocumentList(List<Document> documentList) {
+        this.documentList = documentList;
+    }
+
+    public void addDocument(Document document){
+        this.documentList.add(document);
+    }
+
+    public void removeDocument(Document document){
+        this.documentList.remove(document);
+    }
 }

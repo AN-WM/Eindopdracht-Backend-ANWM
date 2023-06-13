@@ -3,14 +3,18 @@ package nl.novi.EindopdrachtBackend.services;
 import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
 import nl.novi.EindopdrachtBackend.models.Customer;
+import nl.novi.EindopdrachtBackend.models.Document;
 import nl.novi.EindopdrachtBackend.models.HearingAid;
 import nl.novi.EindopdrachtBackend.models.Receipt;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
+import nl.novi.EindopdrachtBackend.repositories.DocumentRepository;
 import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
 import nl.novi.EindopdrachtBackend.repositories.ReceiptRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -19,46 +23,52 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final HearingAidRepository hearingAidRepository;
     private final ReceiptRepository receiptRepository;
+    private final DocumentRepository documentRepository;
 
-    public CustomerService(
-            CustomerRepository customerRepository,
-            HearingAidRepository hearingAidRepository,
-            ReceiptRepository receiptRepository) {
-
+    public CustomerService(CustomerRepository customerRepository,
+                           HearingAidRepository hearingAidRepository,
+                           ReceiptRepository receiptRepository,
+                           DocumentRepository documentRepository) {
         this.customerRepository = customerRepository;
         this.hearingAidRepository = hearingAidRepository;
         this.receiptRepository = receiptRepository;
+        this.documentRepository = documentRepository;
     }
 
-    public List<CustomerDto> getAllCustomers() {
+    public ResponseEntity<CustomerDto> createCustomer(CustomerDto customerDto) {
+        Customer savedCustomer = customerRepository.save(toCustomer(customerDto));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{customerId}")
+                .buildAndExpand(savedCustomer.getId()).toUri();
+
+        return ResponseEntity.created(location).body(fromCustomer(savedCustomer));
+    }
+
+    public ResponseEntity<CustomerDto> getCustomer(Long id) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        if (customer.isEmpty())
+            throw new IndexOutOfBoundsException(String.format("ID %d was not found", id));
+
+        return ResponseEntity.ok(fromCustomer(customer.get()));
+    }
+
+    public ResponseEntity<List<CustomerDto>> getAllCustomers() {
         List<CustomerDto> collection = new ArrayList<>();
         List<Customer> list = customerRepository.findAll();
         for (Customer customer : list) {
             collection.add(fromCustomer(customer));
         }
-        return collection;
+        return ResponseEntity.ok().body(collection);
     }
 
-    public CustomerDto getCustomer(Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isEmpty())
-            throw new IndexOutOfBoundsException(String.format("ID %d was not found", id));
-
-        return fromCustomer(customer.get());
-    }
-
-    public Long createCustomer(CustomerDto customerDto) {
-        Customer savedCustomer = customerRepository.save(toCustomer(customerDto));
-        return savedCustomer.getId();
-    }
-
-    public CustomerDto updateCustomer(Long customerId, CustomerDto customerDto) {
+    public ResponseEntity<CustomerDto> updateCustomer(Long customerId, CustomerDto customerDto) {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if (customer.isEmpty())
             throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
 
         customerRepository.save(toCustomer(customerDto));
-        return customerDto;
+
+        return ResponseEntity.ok(customerDto);
     }
 
     public ResponseEntity<Object> deleteCustomer(Long id) {
@@ -67,7 +77,7 @@ public class CustomerService {
             throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", id));
 
         customerRepository.deleteById(id);
-        return ResponseEntity.ok("Customer removed from database");
+        return ResponseEntity.ok(String.format("Customer with ID %s was removed from the database", id));
     }
 
     public ResponseEntity<Object> addHearingAid(Long customerId, String productcode) {
@@ -118,7 +128,41 @@ public class CustomerService {
         customer.addReceipt(receipt);
         customerRepository.save(customer);
 
-        return ResponseEntity.ok("Hearing aid added to customer");
+        return ResponseEntity.ok("Hearing aid was added to customer");
+    }
+
+    public ResponseEntity<String> addDocument(Long customerId, String documentName) {
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        if (documentRepository.findByDocName(documentName).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Document with name %s was not found", documentName));
+
+        Document document = documentRepository.findByDocName(documentName).get();
+
+        customer.addDocument(document);
+        customerRepository.save(customer);
+
+        return ResponseEntity.ok("Document was added to customer");
+    }
+
+    public ResponseEntity<String> removeDocument(Long customerId, String fileName) {
+        if (customerRepository.findById(customerId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+
+        Customer customer = customerRepository.findById(customerId).get();
+
+        if (documentRepository.findByDocName(fileName).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Document with name %s was not found", fileName));
+
+        Document documentToRemove = customer.getDocumentList().stream().filter((a) -> a.getDocName().equals(fileName)).findAny().get();
+
+        customer.removeDocument(documentToRemove);
+        customerRepository.save(customer);
+
+        return ResponseEntity.ok("Document was removed from customer");
     }
 
     public static Customer toCustomer(CustomerDto dto) {

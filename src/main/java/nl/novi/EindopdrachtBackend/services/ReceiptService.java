@@ -1,6 +1,5 @@
 package nl.novi.EindopdrachtBackend.services;
 
-import nl.novi.EindopdrachtBackend.dtos.HearingAidDto;
 import nl.novi.EindopdrachtBackend.dtos.InputReceiptDto;
 import nl.novi.EindopdrachtBackend.dtos.ReturnReceiptDto;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
@@ -9,6 +8,7 @@ import nl.novi.EindopdrachtBackend.repositories.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -62,6 +62,18 @@ public class ReceiptService {
 
         receiptRepository.save(toReceipt(receiptDto));
         return receiptRepository.findById(receiptId);
+    }
+
+    public ResponseEntity<Receipt> finaliseReceipt(Long receiptId, LocalDate date) {
+        if (receiptRepository.findById(receiptId).isEmpty())
+            throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
+
+        Receipt finalisedReceipt = receiptRepository.findById(receiptId).get();
+        finalisedReceipt.setSaleDate(date);
+
+        receiptRepository.save(finalisedReceipt);
+
+        return ResponseEntity.ok(finalisedReceipt);
     }
 
     public ResponseEntity<Object> deleteReceipt(Long id) {

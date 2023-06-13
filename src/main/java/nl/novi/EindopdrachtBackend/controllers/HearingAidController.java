@@ -18,6 +18,17 @@ public class HearingAidController {
         this.hearingAidService = hearingAidService;
     }
 
+    @PostMapping(value = "")
+    public ResponseEntity<HearingAidDto> createHearingAid(@RequestBody HearingAidDto dto) {;
+
+        String newProductcode = hearingAidService.createHearingAid(dto);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productcode}")
+                .buildAndExpand(newProductcode).toUri();
+
+        return ResponseEntity.created(location).body(dto);
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<List<HearingAidDto>> getHearingAids() {
 
@@ -32,17 +43,6 @@ public class HearingAidController {
         HearingAidDto optionalHearingAid = hearingAidService.getHearingAid(productcode);
 
         return ResponseEntity.ok().body(optionalHearingAid);
-    }
-
-    @PostMapping(value = "")
-    public ResponseEntity<HearingAidDto> createHearingAid(@RequestBody HearingAidDto dto) {;
-
-        String newProductcode = hearingAidService.createHearingAid(dto);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productcode}")
-                .buildAndExpand(newProductcode).toUri();
-
-        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{productcode}")

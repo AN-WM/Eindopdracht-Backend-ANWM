@@ -22,6 +22,18 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping(value = "")
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {;
+
+        Long newEmployeeId = userService.createUser(dto);
+        userService.addAuthority(newEmployeeId, "USER");
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{employeeId}")
+                .buildAndExpand(newEmployeeId).toUri();
+
+        return ResponseEntity.created(location).body(dto);
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<List<UserDto>> getUsers() {
 
@@ -36,18 +48,6 @@ public class UserController {
         UserDto optionalUser = userService.getUser(employeeId);
         
         return ResponseEntity.ok().body(optionalUser);
-    }
-
-    @PostMapping(value = "")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {;
-
-        Long newEmployeeId = userService.createUser(dto);
-        userService.addAuthority(newEmployeeId, "USER");
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{employeeId}")
-                .buildAndExpand(newEmployeeId).toUri();
-
-        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{employeeId}")

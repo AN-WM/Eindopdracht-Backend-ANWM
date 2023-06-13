@@ -18,6 +18,17 @@ public class EarPieceController {
         this.earpieceService = earpieceService;
     }
 
+    @PostMapping(value = "")
+    public ResponseEntity<EarPieceDto> createEarPiece(@RequestBody EarPieceDto dto) {;
+
+        Long newEarPieceId = earpieceService.createEarPiece(dto);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{earPieceId}")
+                .buildAndExpand(newEarPieceId).toUri();
+
+        return ResponseEntity.created(location).body(dto);
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<List<EarPieceDto>> getEarPieces() {
 
@@ -32,17 +43,6 @@ public class EarPieceController {
         EarPieceDto optionalEarPiece = earpieceService.getEarPiece(earPieceId);
 
         return ResponseEntity.ok().body(optionalEarPiece);
-    }
-
-    @PostMapping(value = "")
-    public ResponseEntity<EarPieceDto> createEarPiece(@RequestBody EarPieceDto dto) {;
-
-        Long newEarPieceId = earpieceService.createEarPiece(dto);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{earPieceId}")
-                .buildAndExpand(newEarPieceId).toUri();
-
-        return ResponseEntity.created(location).body(dto);
     }
 
     @PutMapping(value = "/{earPieceId}")

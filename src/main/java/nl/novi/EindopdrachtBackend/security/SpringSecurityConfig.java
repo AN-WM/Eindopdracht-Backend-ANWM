@@ -55,10 +55,10 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/users/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasAuthority("ADMIN")
 
-                .requestMatchers(HttpMethod.POST,"/customers").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/customers").hasAuthority("USER")
                 .requestMatchers(HttpMethod.POST,"/earpieces").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.POST,"/hearingaids").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.POST,"/receipts").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST,"/receipts").hasAuthority("USER")
 
                 .requestMatchers(HttpMethod.DELETE, "/customers/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/earpieces/**").hasAuthority("ADMIN")
