@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,14 +30,12 @@ public class Receipt {
     public Receipt() {
     }
 
-    public Receipt(Long id, LocalDate saleDate) {
+    public Receipt(Long id) {
         this.id = id;
-        this.saleDate = saleDate;
     }
 
-    public Receipt(long id, LocalDate saleDate, Customer customer, List<HearingAid> hearingAidList, List<EarPiece> earPieceList) {
+    public Receipt(long id, Customer customer, List<HearingAid> hearingAidList, List<EarPiece> earPieceList) {
         this.id = id;
-        this.saleDate = saleDate;
         this.customer = customer;
         this.hearingAidList = hearingAidList;
         this.earPieceList = earPieceList;

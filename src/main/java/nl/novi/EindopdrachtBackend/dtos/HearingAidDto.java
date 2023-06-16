@@ -3,7 +3,7 @@ package nl.novi.EindopdrachtBackend.dtos;
 import jakarta.validation.constraints.*;
 
 public class HearingAidDto {
-    @NotBlank
+    @NotBlank(message = "Productcode is required")
     private String productcode;
     private String brand;
     private String type;

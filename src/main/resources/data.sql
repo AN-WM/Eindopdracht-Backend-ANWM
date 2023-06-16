@@ -19,8 +19,8 @@
   INSERT INTO earpieces (id, type, colour, size, price, hearing_aid_productcode) VALUES (20001, 'Open', 'Pink', 'Custom', 40, 'h389dg4i');
 
 --Receipts aanmaken
-  INSERT INTO receipts (id, sale_Date, customer_id) VALUES (30000, '2023-01-02', 10000);
-  INSERT INTO receipts (id, sale_Date, customer_id) VALUES (30001, '2023-01-03', 10001);
+  INSERT INTO receipts (id, customer_id) VALUES (30000, 10000);
+  INSERT INTO receipts (id, customer_id) VALUES (30001, 10001);
   INSERT INTO receipts_ear_piece_list (receipt_id, ear_piece_list_id) VALUES (30000, 20000);
   INSERT INTO receipts_ear_piece_list (receipt_id, ear_piece_list_id) VALUES (30001, 20001);
   INSERT INTO receipts_hearing_aid_list (receipt_id, hearing_aid_list_productcode) VALUES (30000, 'dj20rg4');

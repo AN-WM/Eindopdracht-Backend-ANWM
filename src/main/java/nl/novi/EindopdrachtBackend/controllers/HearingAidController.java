@@ -4,9 +4,7 @@ import nl.novi.EindopdrachtBackend.dtos.HearingAidDto;
 import nl.novi.EindopdrachtBackend.services.HearingAidService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,46 +16,29 @@ public class HearingAidController {
         this.hearingAidService = hearingAidService;
     }
 
+    @PostMapping(value = "")
+    public ResponseEntity<HearingAidDto> createHearingAid(@RequestBody HearingAidDto dto) {;
+        return hearingAidService.createHearingAid(dto);
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<List<HearingAidDto>> getHearingAids() {
-
-        List<HearingAidDto> hearingAidDtos = hearingAidService.getAllHearingAids();
-
-        return ResponseEntity.ok().body(hearingAidDtos);
+        return hearingAidService.getAllHearingAids();
     }
 
     @GetMapping(value = "/{productcode}")
     public ResponseEntity<HearingAidDto> getHearingAid(@PathVariable("productcode") String productcode) {
-
-        HearingAidDto optionalHearingAid = hearingAidService.getHearingAid(productcode);
-
-        return ResponseEntity.ok().body(optionalHearingAid);
-    }
-
-    @PostMapping(value = "")
-    public ResponseEntity<HearingAidDto> createHearingAid(@RequestBody HearingAidDto dto) {;
-
-        String newProductcode = hearingAidService.createHearingAid(dto);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{productcode}")
-                .buildAndExpand(newProductcode).toUri();
-
-        return ResponseEntity.created(location).body(dto);
+        return hearingAidService.getHearingAid(productcode);
     }
 
     @PutMapping(value = "/{productcode}")
-    public ResponseEntity<HearingAidDto> updateHearingAid(@PathVariable("productcode") String productcode, @RequestBody HearingAidDto dto) {
-
-        hearingAidService.updateHearingAid(productcode, dto);
-
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<HearingAidDto> updateHearingAid(@PathVariable("productcode") String productcode,
+                                                          @RequestBody HearingAidDto dto) {
+        return hearingAidService.updateHearingAid(productcode, dto);
     }
 
     @DeleteMapping(value = "/{productcode}")
     public ResponseEntity<Object> deleteHearingAid(@PathVariable("productcode") String productcode) {
-
-        hearingAidService.deleteHearingAid(productcode);
-
-        return ResponseEntity.ok("Hearing aid with productcode " + productcode + " was removed from the database");
+        return hearingAidService.deleteHearingAid(productcode);
     }
 }

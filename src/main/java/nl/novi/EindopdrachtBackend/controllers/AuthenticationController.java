@@ -28,13 +28,9 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping(value = "/authenticated")
-    public ResponseEntity<Object> authenticated(Authentication authentication, Principal principal) {
-        return ResponseEntity.ok().body(principal);
-    }
-
     @PostMapping(value = "/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(
+            @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
         Long employeeId = authenticationRequest.getEmployeeId();
         String password = authenticationRequest.getPassword();
@@ -56,4 +52,9 @@ public class AuthenticationController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
+    @GetMapping(value = "/authenticated")
+    public ResponseEntity<Object> authenticated(Authentication authentication,
+                                                Principal principal) {
+        return ResponseEntity.ok().body(principal);
+    }
 }

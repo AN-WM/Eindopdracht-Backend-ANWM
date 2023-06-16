@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nl.novi</groupId>
 	<artifactId>EindopdrachtBackend</artifactId>
-	<version>0.1.1</version>
+	<version>1.0.1</version>
 	<name>EindopdrachtBackend</name>
 	<description>Eindopdracht Backend Anne Wijnen-Meester</description>
 	<properties>

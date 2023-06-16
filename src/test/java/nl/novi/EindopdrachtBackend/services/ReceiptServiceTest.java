@@ -1,5 +1,6 @@
 package nl.novi.EindopdrachtBackend.services;
 
+import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.dtos.InputReceiptDto;
 import nl.novi.EindopdrachtBackend.dtos.ReturnReceiptDto;
 import nl.novi.EindopdrachtBackend.models.Customer;
@@ -18,8 +19,10 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +52,7 @@ class ReceiptServiceTest {
     ArgumentCaptor<Receipt> captor;
 
     Customer customer1;
+    CustomerDto customerDto;
     HearingAid hearingAid1;
     HearingAid hearingAid2;
     List<HearingAid> hearingAidList;
@@ -57,25 +61,29 @@ class ReceiptServiceTest {
     Receipt receipt1;
     Receipt receipt2;
     InputReceiptDto inputReceiptDto1;
-    InputReceiptDto updateDto;
+    InputReceiptDto updateDto1;
+    InputReceiptDto updateDto2;
     Receipt updatedReceipt;
+    LocalDate testDate;
 
     @BeforeEach
     void setUp() {
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
         hearingAid2 = new HearingAid("tha2", "Widex", "Moment Sheer 440 sRIC R D", "Beige", 1995);
         earPiece1 = new EarPiece(1L, "Custom", "Brown", "Custom", 80.94);
-        receipt1 = new Receipt(1L, LocalDate.of(2023, 1, 1));
-        inputReceiptDto1 = new InputReceiptDto(1L, LocalDate.of(2023, 1, 1));
+        receipt1 = new Receipt(1L);
+        inputReceiptDto1 = new InputReceiptDto(1L);
         hearingAidList = new ArrayList<>();
         earPieceList = new ArrayList<>();
         hearingAidList.add(hearingAid1);
         earPieceList.add(earPiece1);
-        customer1 = new Customer(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        updateDto =  new InputReceiptDto(1L, LocalDate.of(2023, 6, 1));
-        updatedReceipt = new Receipt(1L, LocalDate.of(2023, 6, 1));
-        receipt2 = new Receipt(2L, LocalDate.of(2023, 2, 24), customer1, hearingAidList, earPieceList);
-
+        customer1 = new Customer(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        customerDto = new CustomerDto(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        updateDto1 =  new InputReceiptDto(1L, LocalDate.of(1990, 04,02), customerDto);
+        updateDto2 =  new InputReceiptDto(5L, LocalDate.of(1990, 04,02), customerDto);
+        updatedReceipt = new Receipt(1L);
+        receipt2 = new Receipt(2L, customer1, hearingAidList, earPieceList);
+        testDate = LocalDate.now();
     }
 
     @AfterEach
@@ -87,8 +95,10 @@ class ReceiptServiceTest {
         inputReceiptDto1 = null;
         hearingAidList = null;
         customer1 = null;
-        updateDto = null;
+        updateDto1 = null;
+        updateDto2 = null;
         updatedReceipt = null;
+        testDate = null;
     }
 
     @Test
@@ -97,7 +107,7 @@ class ReceiptServiceTest {
         Mockito.when(receiptRepository.findAll()).thenReturn(List.of(receipt1, receipt2));
 
         //Act
-        List<ReturnReceiptDto> receiptList = receiptService.getAllReceipts();
+        List<ReturnReceiptDto> receiptList = receiptService.getAllReceipts().getBody();
 
         //Assert
         assertEquals(receipt1.getId(), receiptList.get(0).getId());
@@ -110,9 +120,9 @@ class ReceiptServiceTest {
                 .when(receiptRepository.findById(receipt1.getId()))
                 .thenReturn(Optional.ofNullable(receipt1));
 
-        ReturnReceiptDto result = receiptService.getReceipt(1L);
+        ReturnReceiptDto result = receiptService.getReceipt(1L).getBody();
 
-        assertEquals(LocalDate.of(2023, 1, 1), result.getSaleDate());
+        assertEquals(1L, result.getId());
     }
 
     @Test
@@ -136,29 +146,57 @@ class ReceiptServiceTest {
     @Test
     void testUpdateReceipt() {
         when(receiptRepository.findById(1L)).thenReturn(Optional.of(receipt1));
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer1));
 
-        receiptService.updateReceipt(1L, updateDto);
+        receiptService.updateReceipt(1L, updateDto1);
         verify(receiptRepository, times(1)).save(captor.capture());
 
         Receipt result = captor.getValue();
 
         assertEquals(updatedReceipt.getId(), result.getId());
-        assertEquals(updatedReceipt.getSaleDate(), result.getSaleDate());
+        assertEquals(LocalDate.of(1990, 04,02), result.getSaleDate());
     }
 
     @Test
-    void testUpdateThrowsException() {
+    void testUpdateThrowsReceiptException() {
         assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
-                () -> receiptService.updateReceipt(4L, updateDto));
+                () -> receiptService.updateReceipt(4L, updateDto1));
+    }
+
+    @Test
+    void testUpdateThrowsCustomerException() {
+        when(receiptRepository.findById(1L)).thenReturn(Optional.of(receipt1));
+
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> receiptService.updateReceipt(1L, updateDto2));
+    }
+
+    @Test
+    void testFinaliseReceipt() {
+        when(receiptRepository.findById(1L)).thenReturn(Optional.of(receipt1));
+
+        receiptService.finaliseReceipt(1L, testDate);
+        verify(receiptRepository, times(1)).save(captor.capture());
+
+        Receipt result = captor.getValue();
+
+        assertEquals(updatedReceipt.getId(), result.getId());
+        assertEquals(testDate, result.getSaleDate());
+    }
+
+    @Test
+    void testFinaliseReceiptThrowsException() {
+        assertThrows(nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException.class,
+                () -> receiptService.finaliseReceipt(4L, testDate));
     }
 
     @Test
     void testDeleteReceipt() {
-        when(receiptRepository.findById(1L)).thenReturn(Optional.of(receipt1));
+        when(receiptRepository.findById(2L)).thenReturn(Optional.of(receipt2));
 
-        receiptService.deleteReceipt(1L);
+        receiptService.deleteReceipt(2L);
 
-        verify(receiptRepository).deleteById(1L);
+        verify(receiptRepository).deleteById(2L);
     }
 
     @Test
@@ -233,7 +271,7 @@ class ReceiptServiceTest {
         Receipt result = captor.getValue();
 
         assertEquals(2L, result.getId());
-        assertEquals(true, result.getEarPieceList().isEmpty());
+        assertTrue(result.getEarPieceList().isEmpty());
     }
 
     @Test
@@ -287,7 +325,7 @@ class ReceiptServiceTest {
         Receipt result = captor.getValue();
 
         assertEquals(2L, result.getId());
-        assertEquals(true, result.getHearingAidList().isEmpty());
+        assertTrue(result.getHearingAidList().isEmpty());
     }
 
     @Test

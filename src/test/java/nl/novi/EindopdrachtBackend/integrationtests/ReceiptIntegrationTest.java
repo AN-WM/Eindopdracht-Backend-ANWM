@@ -70,8 +70,8 @@ public class ReceiptIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        customer1 = new Customer(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
-        customerDto1 = new CustomerDto(1L, "Alfa", "Tests", "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        customer1 = new Customer(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
+        customerDto1 = new CustomerDto(1L, "Alfa", "Tests", LocalDate.of(1990, 05, 06), "Dorpsstraat 1", "9876 ZY", "Het Gehucht", 1928376450, "alfatests@gmail.com");
         customerRepository.save(customer1);
 
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
@@ -89,11 +89,11 @@ public class ReceiptIntegrationTest {
         hearingAidList.add(hearingAid1);
         earPieceList.add(earPiece1);
 
-        receipt1 = new Receipt(1L, LocalDate.of(2022, 6, 5));
-        receipt2 = new Receipt(2L, LocalDate.of(2023, 1, 1), customer1, hearingAidList, earPieceList);
-        receipt3 = new Receipt(3L, LocalDate.of(2015, 3,6));
-        updateDto = new InputReceiptDto(1L, LocalDate.of(2023, 6, 1));
-        updatedReceipt = new Receipt(1L, LocalDate.of(2023, 6, 1));
+        receipt1 = new Receipt(1L);
+        receipt2 = new Receipt(2L, customer1, hearingAidList, earPieceList);
+        receipt3 = new Receipt(3L);
+        updateDto = new InputReceiptDto(1L);
+        updatedReceipt = new Receipt(1L);
 
         receiptRepository.save(receipt1);
         receiptRepository.save(receipt2);
@@ -125,9 +125,7 @@ public class ReceiptIntegrationTest {
         mockMvc.perform(get("/receipts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(receipt1.getId().toString()))
-                .andExpect(jsonPath("$[0].saleDate").value(receipt1.getSaleDate().toString()))
                 .andExpect(jsonPath("$[1].id").value(receipt2.getId().toString()))
-                .andExpect(jsonPath("$[1].saleDate").value(receipt2.getSaleDate().toString()))
                 .andExpect(jsonPath("$[1].customerDto.id").value( customerDto1.getId()))
                 .andExpect(jsonPath("$[1].hearingAidDtoList[0].productcode").value(hearingAidList.get(0).getProductcode()))
                 .andExpect(jsonPath("$[1].earPieceDtoList[0].id").value(earPieceList.get(0).getId().toString()));
@@ -138,8 +136,7 @@ public class ReceiptIntegrationTest {
 
         mockMvc.perform(get("/receipts/" + receipt1.getId().toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(receipt1.getId().toString()))
-                .andExpect(jsonPath("saleDate").value(receipt1.getSaleDate().toString()));
+                .andExpect(jsonPath("id").value(receipt1.getId().toString()));
     }
 
     @Test
@@ -157,8 +154,7 @@ public class ReceiptIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(updateDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(updatedReceipt.getId().toString()))
-                .andExpect(jsonPath("saleDate").value(updatedReceipt.getSaleDate().toString()));
+                .andExpect(jsonPath("id").value(updatedReceipt.getId().toString()));
     }
 
     @Test
