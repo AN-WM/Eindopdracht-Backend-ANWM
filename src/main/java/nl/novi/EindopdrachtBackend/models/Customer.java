@@ -2,7 +2,6 @@ package nl.novi.EindopdrachtBackend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +29,7 @@ public class Customer {
     @JsonIgnore
     private List<HearingAid> hearingAidList;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "customer")
     @JsonIgnore
     private List<Document> documentList;
 

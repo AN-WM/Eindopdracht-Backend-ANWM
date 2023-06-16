@@ -7,6 +7,7 @@ import nl.novi.EindopdrachtBackend.models.Authority;
 import nl.novi.EindopdrachtBackend.models.User;
 import nl.novi.EindopdrachtBackend.repositories.UserRepository;
 import nl.novi.EindopdrachtBackend.utils.RandomStringGenerator;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,30 +19,6 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    public List<UserDto> getUsers() {
-        List<UserDto> collection = new ArrayList<>();
-        List<User> list = userRepository.findAll();
-        for (User user : list) {
-            collection.add(fromUser(user));
-        }
-        return collection;
-    }
-
-    public UserDto getUser(Long employeeId) {
-        UserDto dto = new UserDto();
-        Optional<User> user = userRepository.findByEmployeeId(employeeId);
-        if (user.isEmpty())
-            throw new UserNotFoundException(employeeId);
-
-        dto = fromUser(user.get());
-
-        return dto;
-    }
-
-    public boolean userExists(Long employeeId) {
-        return userRepository.existsById(String.valueOf(employeeId));
     }
 
     public Long createUser(UserDto userDto) {
@@ -57,14 +34,25 @@ public class UserService {
         return newUser.getEmployeeId();
     }
 
-    public void deleteUser(Long employeeId) {
-        if (userRepository.findByEmployeeId(employeeId).isEmpty())
-            throw new UserNotFoundException(employeeId);
-
-        userRepository.deleteById(String.valueOf(employeeId));
+    public ResponseEntity<List<UserDto>> getUsers() {
+        List<UserDto> collection = new ArrayList<>();
+        List<User> list = userRepository.findAll();
+        for (User user : list) {
+            collection.add(fromUser(user));
+        }
+        return ResponseEntity.ok().body(collection);
     }
 
-    public void updateUser(Long employeeId, UserDto newUser) {
+    public ResponseEntity<UserDto> getUser(Long employeeId) {
+        Optional<User> user = userRepository.findByEmployeeId(employeeId);
+
+        if (user.isEmpty())
+            throw new UserNotFoundException(employeeId);
+
+        return ResponseEntity.ok().body(fromUser(user.get()));
+    }
+
+    public ResponseEntity<UserDto> updateUser(Long employeeId, UserDto newUser) {
         if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
@@ -75,18 +63,30 @@ public class UserService {
         user.setDob(newUser.getDob());
 
         userRepository.save(user);
+
+        return ResponseEntity.ok(fromUser(user));
     }
 
-    public Set<Authority> getAuthorities(Long employeeId) {
+    public ResponseEntity<String> deleteUser(Long employeeId) {
+        if (userRepository.findByEmployeeId(employeeId).isEmpty())
+            throw new UserNotFoundException(employeeId);
+
+        userRepository.deleteById(String.valueOf(employeeId));
+
+        return ResponseEntity.ok(String.format("Employee %d was removed from the database", employeeId));
+    }
+
+    public ResponseEntity<Set<Authority>> getAuthorities(Long employeeId) {
         if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
 
         User user = userRepository.findByEmployeeId(employeeId).get();
         UserDto userDto = fromUser(user);
-        return userDto.getAuthorities();
+
+        return ResponseEntity.ok().body(userDto.getAuthorities());
     }
 
-    public void addAuthority(Long employeeId, String authority) {
+    public ResponseEntity<String> addAuthority(Long employeeId, String authority) {
 
         if (userRepository.findByEmployeeId(employeeId).isEmpty())
             throw new UserNotFoundException(employeeId);
@@ -94,6 +94,8 @@ public class UserService {
         User user = userRepository.findByEmployeeId(employeeId).get();
         user.addAuthority(new Authority(employeeId, authority));
         userRepository.save(user);
+
+        return ResponseEntity.ok(String.format("Authority %s was added to employee %d", authority, employeeId));
     }
 
     public void removeAuthority(Long employeeId, String authority) {

@@ -7,7 +7,6 @@ import java.io.Serializable;
 @IdClass(AuthorityKey.class)
 @Table(name = "authorities")
 public class Authority implements Serializable {
-
     @Id
     @Column(nullable = false)
     private Long employeeId;
@@ -25,9 +24,7 @@ public class Authority implements Serializable {
     public Long getEmployeeId() {
         return employeeId;
     }
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
-    }
+    public void setEmployeeId(Long employeeId) {this.employeeId = employeeId;}
     public String getAuthority() {
         return authority;
     }

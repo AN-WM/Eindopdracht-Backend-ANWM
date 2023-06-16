@@ -4,15 +4,11 @@ import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.dtos.DocumentDto;
 import nl.novi.EindopdrachtBackend.services.CustomerService;
 import nl.novi.EindopdrachtBackend.services.DocumentService;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -45,7 +41,8 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/{customerId}")
-    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("customerId") Long customerId, @RequestBody CustomerDto dto) {
+    public ResponseEntity<CustomerDto> updateCustomer(@PathVariable("customerId") Long customerId,
+                                                      @RequestBody CustomerDto dto) {
         return customerService.updateCustomer(customerId, dto);
     }
 
@@ -56,7 +53,8 @@ public class CustomerController {
 
     // Document requests
     @PostMapping(value = "/{customerId}/documents")
-    public ResponseEntity<String> addDocumentToCustomer(@PathVariable("customerId") Long customerId, @RequestBody MultipartFile file) throws IOException {
+    public ResponseEntity<String> addDocumentToCustomer(@PathVariable("customerId") Long customerId,
+                                                        @RequestBody MultipartFile file) throws IOException {
         String newDocumentName = documentService.uploadDocument(customerId, file);
         return customerService.addDocument(customerId, newDocumentName);
     }
@@ -67,7 +65,8 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "/{customerId}/{docName}")
-    public ResponseEntity<String> deleteDocument(@PathVariable("customerId") Long customerId, @PathVariable("docName") String docName) {
+    public ResponseEntity<String> deleteDocument(@PathVariable("customerId") Long customerId,
+                                                 @PathVariable("docName") String docName) {
         return customerService.removeDocument(customerId, docName);
     }
 }

@@ -15,7 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,8 +67,9 @@ class CustomerServiceTest {
         hearingAid1 = new HearingAid("tha1", "Oticon", "Real 1 miniRITE R", "Auburn", 2075);
         hearingAid2 = new HearingAid("tha2", "Widex", "Moment Sheer 440 sRIC R D", "Beige", 1995);
         receipt1 = new Receipt(1L);
-        hearingAidList = new ArrayList<>();
         receiptList = new ArrayList<>();
+        receiptList.add(receipt1);
+        hearingAidList = new ArrayList<>();
         hearingAidList.add(hearingAid1);
         document1 = new Document(1L, "testDocument.pdf");
         documentList = new ArrayList<>();
@@ -79,9 +85,11 @@ class CustomerServiceTest {
     void tearDown() {
         hearingAid1 = null;
         hearingAid2 = null;
-        receipt1 = null;
         hearingAidList = null;
+        receipt1 = null;
         receiptList = null;
+        document1 = null;
+        documentList = null;
         customer1 = null;
         customer2 = null;
         updatedCustomer = null;
@@ -117,17 +125,25 @@ class CustomerServiceTest {
     void getAllCustomers() {
         Mockito.when(customerRepository.findAll()).thenReturn(List.of(customer1, customer2));
 
-        ResponseEntity<List<CustomerDto>> customerList = customerService.getAllCustomers();
+        List<CustomerDto> customerList = customerService.getAllCustomers().getBody();
 
-        assertEquals(customer1.getId(), customerList.getBody().get(0).getId());
-        assertEquals(customer2.getId(), customerList.getBody().get(1).getId());
+        assertEquals(customer1.getId(), customerList.get(0).getId());
+        assertEquals(customer2.getId(), customerList.get(1).getId());
     }
 
     @Test
     void testCreateCustomer() {
         when(customerRepository.save(any(Customer.class))).thenReturn(customer1);
 
-        customerService.createCustomer(customerDto1);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{customerId}")
+                .buildAndExpand(customer1.getId()).toUri();
+
+        ResponseEntity<Object> testResponse = ResponseEntity.created(location).build();
+
+        ResponseEntity<CustomerDto> responseResult = customerService.createCustomer(customerDto1);
         verify(customerRepository, times(1)).save(captor.capture());
         Customer result = captor.getValue();
 
@@ -138,6 +154,9 @@ class CustomerServiceTest {
         assertEquals(customer1.getZipCode(), result.getZipCode());
         assertEquals(customer1.getPhoneNumber(), result.getPhoneNumber());
         assertEquals(customer1.getEmail(), result.getEmail());
+        assertEquals(testResponse.getStatusCode(), responseResult.getStatusCode());
+        assertEquals(testResponse.getHeaders().getLocation(), responseResult.getHeaders().getLocation());
+        assertEquals(customer1.getId(), responseResult.getBody().getId());
     }
 
     @Test
@@ -168,11 +187,11 @@ class CustomerServiceTest {
 
     @Test
     void testDeleteCustomer() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer1));
+        when(customerRepository.findById(2L)).thenReturn(Optional.of(customer2));
 
-        customerService.deleteCustomer(1L);
+        customerService.deleteCustomer(2L);
 
-        verify(customerRepository).deleteById(1L);
+        verify(customerRepository).deleteById(2L);
     }
 
     @Test

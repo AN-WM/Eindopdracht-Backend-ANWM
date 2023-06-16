@@ -56,7 +56,8 @@ public class DocumentService {
 
         String mimeType = request.getServletContext().getMimeType(document.getDocName());
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + document.getDocName()).body(document.getDocFile());
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "inline;fileName=" + document.getDocName()).body(document.getDocFile());
     }
 
     public static DocumentDto fromDocument(Document document) {

@@ -9,18 +9,15 @@ import nl.novi.EindopdrachtBackend.services.HearingAidService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ReturnReceiptDto {
 
-    private HearingAidService hearingAidService;
-
     public Long id;
     public LocalDate saleDate;
     public CustomerDto customerDto;
-    private List<EarPieceDto> earPieceDtoList = new ArrayList<>();
-    private List<HearingAidDto> hearingAidDtoList = new ArrayList<>();
+    private final List<EarPieceDto> earPieceDtoList = new ArrayList<>();
+    private final List<HearingAidDto> hearingAidDtoList = new ArrayList<>();
 
     public ReturnReceiptDto() {
     }
@@ -46,13 +43,17 @@ public class ReturnReceiptDto {
         this.saleDate = saleDate;
     }
 
-    public CustomerDto getCustomerDto() { return this.customerDto; }
+    public CustomerDto getCustomerDto() {
+        return this.customerDto;
+    }
 
     public void setCustomerDto(Customer customer) {
         this.customerDto = CustomerService.fromCustomer(customer);
     }
 
-    public List<HearingAidDto> getHearingAidDtoList() { return this.hearingAidDtoList; }
+    public List<HearingAidDto> getHearingAidDtoList() {
+        return this.hearingAidDtoList;
+    }
 
     public void setHearingAidDtoList(List<HearingAid> hearingAidList) {
         for (HearingAid hearingAid : hearingAidList) {
@@ -60,7 +61,9 @@ public class ReturnReceiptDto {
         }
     }
 
-    public List<EarPieceDto> getEarPieceDtoList() { return this.earPieceDtoList; }
+    public List<EarPieceDto> getEarPieceDtoList() {
+        return this.earPieceDtoList;
+    }
 
     public void setEarPieceDtoList(List<EarPiece> earPieceList) {
         for (EarPiece earpiece : earPieceList) {

@@ -1,5 +1,6 @@
 package nl.novi.EindopdrachtBackend.services;
 
+import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.dtos.InputReceiptDto;
 import nl.novi.EindopdrachtBackend.dtos.ReturnReceiptDto;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
@@ -18,36 +19,39 @@ public class ReceiptService {
     private final EarPieceRepository earPieceRepository;
     private final HearingAidRepository hearingAidRepository;
     private final ReceiptRepository receiptRepository;
+    private final CustomerService customerService;
 
 
     public ReceiptService(
             CustomerRepository customerRepository,
             EarPieceRepository earPieceRepository,
             HearingAidRepository hearingAidRepository,
-            ReceiptRepository receiptRepository
+            ReceiptRepository receiptRepository,
+            CustomerService customerService
     ) {
         this.customerRepository = customerRepository;
         this.earPieceRepository = earPieceRepository;
         this.hearingAidRepository = hearingAidRepository;
         this.receiptRepository = receiptRepository;
+        this.customerService = customerService;
     }
 
 
-    public List<ReturnReceiptDto> getAllReceipts() {
+    public ResponseEntity<List<ReturnReceiptDto>> getAllReceipts() {
         List<ReturnReceiptDto> collection = new ArrayList<>();
         List<Receipt> list = receiptRepository.findAll();
         for (Receipt receipt : list) {
             collection.add(fromReceipt(receipt));
         }
-        return collection;
+        return ResponseEntity.ok().body(collection);
     }
 
-    public ReturnReceiptDto getReceipt(Long id) {
+    public ResponseEntity<ReturnReceiptDto> getReceipt(Long id) {
         Optional<Receipt> receipt = receiptRepository.findById(id);
         if (receipt.isEmpty())
             throw new IndexOutOfBoundsException(String.format("ID %d was not found", id));
 
-        return fromReceipt(receipt.get());
+        return ResponseEntity.ok().body(fromReceipt(receipt.get()));
     }
 
     public Long createReceipt(InputReceiptDto receiptDto) {
@@ -55,13 +59,25 @@ public class ReceiptService {
         return savedReceipt.getId();
     }
 
-    public Optional<Receipt> updateReceipt(Long receiptId, InputReceiptDto receiptDto) {
-        Optional<Receipt> receipt = receiptRepository.findById(receiptId);
-        if (receipt.isEmpty())
+    public ResponseEntity<ReturnReceiptDto> updateReceipt(Long receiptId, InputReceiptDto receiptDto) {
+
+        if (receiptRepository.findById(receiptId).isEmpty())
             throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", receiptId));
 
+        Receipt receipt = receiptRepository.findById(receiptId).get();
+
+        if (receiptDto.saleDate != null) {
+            receipt.setSaleDate(receiptDto.saleDate);
+        }
+        if (receiptDto.customerDto != null) {
+            Long customerId = receiptDto.getCustomerDto().getId();
+            if(customerRepository.findById(customerId).isEmpty())
+                throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", customerId));
+            receipt.setCustomer(customerRepository.findById(customerId).get());
+        }
         receiptRepository.save(toReceipt(receiptDto));
-        return receiptRepository.findById(receiptId);
+
+        return ResponseEntity.ok(fromReceipt(receipt));
     }
 
     public ResponseEntity<Receipt> finaliseReceipt(Long receiptId, LocalDate date) {
@@ -77,9 +93,26 @@ public class ReceiptService {
     }
 
     public ResponseEntity<Object> deleteReceipt(Long id) {
-        Optional<Receipt> receipt = receiptRepository.findById(id);
-        if (receipt.isEmpty())
+        if (receiptRepository.findById(id).isEmpty())
             throw new IndexOutOfBoundsException(String.format("Receipt with id %d was not found", id));
+
+        Receipt receipt = receiptRepository.findById(id).get();
+
+        List<EarPiece> earPieceList = receipt.getEarPieceList();
+        if (earPieceList != null) {
+            for (EarPiece earPiece : earPieceList) {
+                earPiece.setReceipt(null);
+                earPieceRepository.save(earPiece);
+            }
+        }
+
+        List<HearingAid> hearingAidList = receipt.getHearingAidList();
+        if (hearingAidList != null) {
+            for (HearingAid hearingAid : hearingAidList) {
+                hearingAid.setReceipt(null);
+                hearingAidRepository.save(hearingAid);
+            }
+        }
 
         receiptRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Receipt with id %d was removed from the database", id));
@@ -170,10 +203,14 @@ public class ReceiptService {
 
     public Receipt toReceipt(InputReceiptDto dto) {
         var receipt = new Receipt();
+        Optional<CustomerDto> foundCustomer = Optional.ofNullable(dto.getCustomerDto());
 
         receipt.setId(dto.getId());
         receipt.setSaleDate(dto.getSaleDate());
-        receipt.setCustomer(dto.getCustomer());
+
+        if (foundCustomer.isPresent()) {
+            receipt.setCustomer(customerService.toCustomer(dto.getCustomerDto()));
+        }
 
         return receipt;
     }

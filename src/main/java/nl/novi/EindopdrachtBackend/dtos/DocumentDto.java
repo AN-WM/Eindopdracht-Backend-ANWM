@@ -4,8 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public class DocumentDto {
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Please name the document")
     private String docName;
+    @NotBlank(message = "File is required")
     private byte[] docFile;
 
     public Long getId() {

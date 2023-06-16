@@ -2,10 +2,7 @@ package nl.novi.EindopdrachtBackend.services;
 
 import nl.novi.EindopdrachtBackend.dtos.CustomerDto;
 import nl.novi.EindopdrachtBackend.exceptions.IndexOutOfBoundsException;
-import nl.novi.EindopdrachtBackend.models.Customer;
-import nl.novi.EindopdrachtBackend.models.Document;
-import nl.novi.EindopdrachtBackend.models.HearingAid;
-import nl.novi.EindopdrachtBackend.models.Receipt;
+import nl.novi.EindopdrachtBackend.models.*;
 import nl.novi.EindopdrachtBackend.repositories.CustomerRepository;
 import nl.novi.EindopdrachtBackend.repositories.DocumentRepository;
 import nl.novi.EindopdrachtBackend.repositories.HearingAidRepository;
@@ -72,9 +69,27 @@ public class CustomerService {
     }
 
     public ResponseEntity<Object> deleteCustomer(Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isEmpty())
+
+        if (customerRepository.findById(id).isEmpty())
             throw new IndexOutOfBoundsException(String.format("Customer with id %d was not found", id));
+
+        Customer customer = customerRepository.findById(id).get();
+
+        List<Receipt> receiptList = customer.getReceiptList();
+        if (receiptList != null) {
+            for (Receipt receipt : receiptList) {
+                receipt.setCustomer(null);
+                receiptRepository.save(receipt);
+            }
+        }
+
+        List<HearingAid> hearingAidList = customer.getHearingAidList();
+        if (hearingAidList != null) {
+            for (HearingAid hearingAid : hearingAidList) {
+                hearingAid.setCustomer(null);
+                hearingAidRepository.save(hearingAid);
+            }
+        }
 
         customerRepository.deleteById(id);
         return ResponseEntity.ok(String.format("Customer with ID %s was removed from the database", id));
@@ -161,6 +176,7 @@ public class CustomerService {
 
         customer.removeDocument(documentToRemove);
         customerRepository.save(customer);
+        documentRepository.delete(documentToRemove);
 
         return ResponseEntity.ok("Document was removed from customer");
     }
@@ -171,6 +187,7 @@ public class CustomerService {
         customer.setId(dto.getId());
         customer.setFirstName(dto.getFirstName());
         customer.setLastName(dto.getLastName());
+        customer.setDob(dto.getDob());
         customer.setAddress(dto.getAddress());
         customer.setZipCode(dto.getZipCode());
         customer.setCity(dto.getCity());
@@ -187,6 +204,7 @@ public class CustomerService {
         dto.setId(customer.getId());
         dto.setFirstName(customer.getFirstName());
         dto.setLastName(customer.getLastName());
+        dto.setDob(customer.getDob());
         dto.setAddress(customer.getAddress());
         dto.setZipCode(customer.getZipCode());
         dto.setCity(customer.getCity());

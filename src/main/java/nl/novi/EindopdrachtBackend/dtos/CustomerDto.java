@@ -6,23 +6,33 @@ import java.time.LocalDate;
 
 public class CustomerDto {
     private Long id;
-    @NotBlank
+    @NotBlank(message = "First name is required")
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "Last name is required")
     private String lastName;
+    @NotBlank(message = "Date of birth is required")
     private LocalDate dob;
     private String address;
     private String zipCode;
     private String city;
+    @Size(max = 10, min = 10, message = "Phone number must have 10 digits")
     private int phoneNumber;
-    @Email
+    @Email(message = "E-mail address must be valid")
     private String email;
     //private doc document
 
     public CustomerDto() {
     }
 
-    public CustomerDto(long id, String firstName, String lastName, LocalDate dob, String address, String zipCode, String city, int phoneNumber, String email) {
+    public CustomerDto(long id,
+                       String firstName,
+                       String lastName,
+                       LocalDate dob,
+                       String address,
+                       String zipCode,
+                       String city,
+                       int phoneNumber,
+                       String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -56,6 +66,14 @@ public class CustomerDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 
     public String getAddress() {
